@@ -30,7 +30,7 @@
             -webkit-text-size-adjust: 100%;
         }
 
-        /* 0度／傾き 背景色膜 */
+        /* 水準器の背景膜（0°＝緑、傾き＝赤） */
         #level-bg-tint {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
             pointer-events: none; opacity: 0;
@@ -51,7 +51,6 @@
             position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 3;
         }
 
-        /* 紙吹雪用キャンバス */
         #confetti-canvas {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
             pointer-events: none; z-index: 150; display: none;
@@ -62,7 +61,7 @@
             position: absolute; top: 12px; left: 50%;
             transform: translateX(-50%);
             width: 92%; max-width: 420px;
-            background: rgba(18, 18, 20, 0.82);
+            background: rgba(18, 18, 20, 0.85);
             backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
             border: 1px solid rgba(255, 255, 255, 0.15);
             border-radius: 14px; padding: 8px 12px;
@@ -79,7 +78,7 @@
         .score-table td { padding: 4px; font-weight: 700; }
         .p1-row { color: var(--p1-color); }
         .p2-row { color: var(--p2-color); }
-        .active-round-col { background: rgba(255, 255, 255, 0.1); border-radius: 4px; }
+        .active-round-col { background: rgba(255, 255, 255, 0.12); border-radius: 4px; }
 
         .stones-left-dots {
             display: inline-flex; gap: 4px; vertical-align: middle; margin-left: 4px;
@@ -177,76 +176,72 @@
         /* モーダル */
         .modal-screen {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.9);
+            background: rgba(0, 0, 0, 0.92);
             backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
-            display: flex; flex-direction: column; justify-content: center; align-items: center;
-            z-index: 100; padding: 22px; text-align: center;
-            overflow-y: auto;
+            display: flex; flex-direction: column; justify-content: flex-start; align-items: center;
+            z-index: 100; padding: 20px 16px; text-align: center;
+            overflow-y: auto; -webkit-overflow-scrolling: touch;
         }
         .modal-title {
-            font-size: 2rem; font-weight: 800; letter-spacing: 3px; margin-bottom: 4px;
+            font-size: 1.8rem; font-weight: 800; letter-spacing: 3px; margin-bottom: 2px;
             background: linear-gradient(180deg, #ffffff 0%, #94a3b8 100%);
             -webkit-background-clip: text; -webkit-text-fill-color: transparent;
         }
         .styled-btn {
-            padding: 15px 44px; background: #ffffff; color: #000000;
+            padding: 14px 44px; background: #ffffff; color: #000000;
             border: none; border-radius: 40px; font-size: 1.05rem; font-weight: 700;
             cursor: pointer; box-shadow: 0 4px 25px rgba(255,255,255,0.25);
-            transition: transform 0.1s;
+            transition: transform 0.1s; margin-top: 10px; margin-bottom: 20px;
         }
         .styled-btn:active { transform: scale(0.95); }
 
-        /* ルール解説ビジュアルカード */
+        /* ====================
+           1ページ目：説明映像スクリーン
+        ==================== */
+        #demo-video-box {
+            width: 100%; max-width: 320px; height: 155px;
+            background: #080808; border: 1.5px solid rgba(255, 255, 255, 0.2);
+            border-radius: 14px; position: relative; overflow: hidden;
+            margin: 10px 0 12px; box-shadow: 0 8px 25px rgba(0,0,0,0.7);
+        }
+        #demo-canvas {
+            width: 100%; height: 100%; display: block;
+        }
+        #demo-caption {
+            position: absolute; bottom: 0; left: 0; width: 100%;
+            background: rgba(0, 0, 0, 0.75); backdrop-filter: blur(6px);
+            padding: 5px 8px; font-size: 0.72rem; font-weight: 600; color: #38bdf8;
+            text-align: center; border-top: 1px solid rgba(255,255,255,0.1);
+        }
+        .video-rec-tag {
+            position: absolute; top: 8px; left: 10px;
+            display: flex; align-items: center; gap: 5px;
+            font-size: 0.65rem; font-weight: 800; color: #ef4444; letter-spacing: 1px;
+        }
+        .rec-dot {
+            width: 6px; height: 6px; border-radius: 50%; background: #ef4444;
+            animation: blinkDot 1s infinite;
+        }
+        @keyframes blinkDot { 0%, 100% { opacity: 1; } 50% { opacity: 0.2; } }
+
+        /* 詳細ルールリスト */
         .rule-scroll-view {
-            width: 100%; max-width: 330px; display: flex; flex-direction: column; gap: 12px; margin: 15px 0 22px;
+            width: 100%; max-width: 320px; display: flex; flex-direction: column; gap: 8px; margin-bottom: 10px;
         }
         .rule-visual-card {
             background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12);
-            border-radius: 14px; padding: 12px; text-align: left;
-            display: flex; gap: 12px; align-items: center;
+            border-radius: 12px; padding: 10px 12px; text-align: left;
+            display: flex; gap: 10px; align-items: center;
         }
-        .card-anim {
-            width: 64px; height: 64px; flex-shrink: 0;
-            background: rgba(0,0,0,0.4); border-radius: 10px;
-            display: flex; justify-content: center; align-items: center;
-            border: 1px solid rgba(255,255,255,0.1);
+        .card-icon {
+            font-size: 1.5rem; flex-shrink: 0; width: 34px; text-align: center;
         }
-        .card-content h4 { font-size: 0.85rem; color: #ffffff; margin-bottom: 2px; }
-        .card-content p { font-size: 0.72rem; color: #94a3b8; line-height: 1.35; }
+        .card-content h4 { font-size: 0.82rem; color: #ffffff; margin-bottom: 2px; }
+        .card-content p { font-size: 0.7rem; color: #94a3b8; line-height: 1.35; }
 
-        /* アニメーション用CSS */
-        .phone-tilt-demo {
-            width: 22px; height: 38px; border: 2px solid #fff; border-radius: 4px;
-            animation: phoneTiltAnim 2.5s infinite ease-in-out;
-        }
-        @keyframes phoneTiltAnim {
-            0%, 100% { transform: rotate(0deg) translateY(0); }
-            30% { transform: rotate(-14deg) translateY(3px); }
-            70% { transform: rotate(14deg) translateY(-3px); }
-        }
-
-        .target-demo-circle {
-            width: 44px; height: 44px; border-radius: 50%;
-            border: 2px solid rgba(239, 68, 68, 0.8);
-            display: flex; justify-content: center; align-items: center;
-            background: radial-gradient(circle, #fff 25%, #ef4444 26%, rgba(59, 130, 246, 0.4) 70%);
-        }
-
-        .zero-brake-demo {
-            width: 36px; height: 36px; border-radius: 50%;
-            border: 2px solid #10b981; background: rgba(16, 185, 129, 0.25);
-            display: flex; justify-content: center; align-items: center;
-            font-size: 0.75rem; font-weight: 700; color: #10b981;
-            animation: zeroPulse 1.5s infinite;
-        }
-        @keyframes zeroPulse {
-            0%, 100% { transform: scale(0.9); opacity: 0.6; }
-            50% { transform: scale(1.1); opacity: 1; }
-        }
-
-        /* 祝福（セレブレーション）演出 */
+        /* 祝福演出バッジ */
         #celebration-badge {
-            font-size: 3.5rem; margin-bottom: 8px;
+            font-size: 3.5rem; margin-top: 40px; margin-bottom: 8px;
             animation: bounceTrophy 1s infinite alternate cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
         @keyframes bounceTrophy {
@@ -319,44 +314,43 @@
 
     <div id="action-msg"></div>
 
-    <!-- 1. 詳細ルール説明画面（ビジュアル＆動くアニメ付き） -->
+    <!-- 1. 詳細ルール説明画面（実写風プレイ映像シミュレーター付き） -->
     <div id="start-modal" class="modal-screen">
         <div class="modal-title">LEVEL ZERO</div>
-        <div style="font-size: 0.78rem; letter-spacing: 4px; color: #38bdf8; font-weight: 700;">TILT CURLING</div>
+        <div style="font-size: 0.75rem; letter-spacing: 4px; color: #38bdf8; font-weight: 700;">TILT CURLING</div>
+
+        <!-- プレイ中の動く説明映像スクリーン -->
+        <div id="demo-video-box">
+            <div class="video-rec-tag"><div class="rec-dot"></div>HOW TO PLAY</div>
+            <canvas id="demo-canvas" width="320" height="155"></canvas>
+            <div id="demo-caption">1. タップで即発射！スマホ上下でスピード調整</div>
+        </div>
 
         <div class="rule-scroll-view">
             <!-- カード1: 発射操作 -->
             <div class="rule-visual-card">
-                <div class="card-anim">
-                    <div class="phone-tilt-demo"></div>
-                </div>
+                <div class="card-icon">📱</div>
                 <div class="card-content">
-                    <h4>📱 タップ発射 & 角度で速度調整</h4>
-                    <p><b>タップで即発射！</b><br>スマホを手前に起こすと<b>BOOST（強打）</b>、奥に倒すと<b>SLOW（弱打）</b>。標準角度でちょうど中央に届きます。</p>
+                    <h4>タップ発射 & 上下で初速調整</h4>
+                    <p><b>タップで即座に打ち出します。</b><br>スマホを手前に起こすと<b>BOOST（速い）</b>、奥に倒すと<b>SLOW（遅い）</b>。標準角度でちょうど中央に届きます。</p>
                 </div>
             </div>
 
-            <!-- カード2: スコア構造 -->
+            <!-- カード2: スコア構造 & 高得点石 -->
             <div class="rule-visual-card">
-                <div class="card-anim">
-                    <div class="target-demo-circle">
-                        <span style="font-size: 0.65rem; font-weight: 800; color:#000;">10</span>
-                    </div>
-                </div>
+                <div class="card-icon">🎯</div>
                 <div class="card-content">
-                    <h4>🎯 ハウス点数 × 倍率スロット</h4>
-                    <p>中心に近いほど高得点（10・5・3・1点）。発射時の目押し倍率（5x〜激レア50x）が掛け算されます！</p>
+                    <h4>ハウス得点 × 激レア高得点石</h4>
+                    <p>中心に近いほど高得点（10・5・3・1点）。高速スロットで止めた<b>緑(30x)</b>や<b>金(50x)</b>の石で打てば一撃大逆転！</p>
                 </div>
             </div>
 
             <!-- カード3: 水準器ブレーキ -->
             <div class="rule-visual-card">
-                <div class="card-anim">
-                    <div class="zero-brake-demo">0°</div>
-                </div>
+                <div class="card-icon">🟢</div>
                 <div class="card-content">
-                    <h4>🟢 0°水平でピタッと急ブレーキ</h4>
-                    <p>滑走中にスマホを完全水平に保つと急減速して停止。傾けると微カーブします（※暴走防止のため機動力を調整済）。</p>
+                    <h4>0°水平で急ブレーキ停止</h4>
+                    <p>滑走中にスマホを完全水平に保つと急減速してピタッと停止！傾けると左右微カーブします（停止後の再滑走は防止済）。</p>
                 </div>
             </div>
         </div>
@@ -365,17 +359,17 @@
     </div>
 
     <!-- 2. プレイヤー交代画面 -->
-    <div id="turn-modal" class="modal-screen" style="display: none;">
+    <div id="turn-modal" class="modal-screen" style="display: none; justify-content: center;">
         <div id="turn-player-tag" style="font-size: 1.1rem; font-weight: 800; margin-bottom: 8px;">PLAYER 1'S TURN</div>
         <div class="modal-title" id="turn-title">ROUND 1</div>
-        <p style="font-size: 0.85rem; color: #94a3b8; margin: 12px 0 24px; line-height: 1.5;">
-            スマホを相手にパスしてください。<br>相手の石をハウス外へ弾き出して逆転を狙おう！
+        <p style="font-size: 0.85rem; color: #94a3b8; margin: 12px 0 24px; line-height: 1.5; max-width: 300px;">
+            スマホを相手に渡してください。<br>相手の石を弾き出して高得点エリアを奪取しよう！
         </p>
         <button class="styled-btn" onclick="startTurnAim()">READY</button>
     </div>
 
     <!-- 3. 祝福・リザルト画面 -->
-    <div id="result-modal" class="modal-screen" style="display: none;">
+    <div id="result-modal" class="modal-screen" style="display: none; justify-content: center;">
         <div id="celebration-badge">🏆</div>
         <div style="font-size: 0.8rem; letter-spacing: 3px; color: #facc15; font-weight: 800; margin-bottom: 6px;">VICTORY!</div>
         <div class="modal-title" id="winner-text" style="font-size: 2.2rem; margin-bottom: 12px;">PLAYER 1 WINS</div>
@@ -400,7 +394,7 @@
         let p1RoundScores = [0, 0, 0];
         let p2RoundScores = [0, 0, 0];
 
-        // 30xと50xは一瞬で通過する高速目押しスロット
+        // 激レア（30x, 50x）は一瞬で通過する高速目押し
         const RARITIES = [
             { name: 'white', mult: 5,  color: '#ffffff', stroke: '#ffffff', label: '5x',  durationFrames: 24 },
             { name: 'black', mult: 10, color: '#1e293b', stroke: '#94a3b8', label: '10x', durationFrames: 20 },
@@ -411,11 +405,10 @@
         let rouletteIdx = 0;
         let rouletteFrameCounter = 0;
 
-        let pitch = 0; // 手前起こし < 0、奥倒し > 0
-        let roll = 0;  // 左右傾き
+        let pitch = 0;
+        let roll = 0;
         let displayAngle = 0;
 
-        // Canvas & 物理
         const canvas = document.getElementById('game-canvas');
         const ctx = canvas.getContext('2d');
         let width = 0, height = 0;
@@ -426,7 +419,7 @@
         let activeStone = null;
 
         /* ==========================================================
-           ストーン クラス（操作機動力を制限）
+           ストーン クラス（高速打ち出し & 静止後の滑り防止）
         ========================================================== */
         class Stone {
             constructor(x, y, player, rarity) {
@@ -446,22 +439,29 @@
                 if (this.stopped) return;
 
                 this.trail.push({ x: this.x, y: this.y });
-                if (this.trail.length > 10) this.trail.shift();
+                if (this.trail.length > 8) this.trail.shift();
+
+                const currentSpeed = Math.hypot(this.vx, this.vy);
 
                 /*
-                   物理挙動の改善：
-                   - 0度水平（displayAngle <= 2）：ブレーキが効いてピタッと止まりやすい
-                   - 傾き操作の機動力を制限：端から端まで横断できないよう微カーブ程度に
+                   改善された物理摩擦：
+                   1. 速度がある時は滑らかに減速
+                   2. スピードが落ちてきたら（低速域）急激に減速してピタッと止まる
+                   3. 一度止まりかけたら傾きによる外力を無視（再滑走・ズルズル滑りを防止）
+                   4. スマホの上下の向きと石の進み方を逆転（pitch正で前進微アシスト）
                 */
-                let friction = 0.965; // 基本減速（早めに止まるテンポ感）
+                let friction = 0.962;
 
                 if (displayAngle <= 2) {
-                    friction = 0.895; // 0度で急ブレーキ
-                } else {
-                    // 横カーブ力を微弱（0.0035）に制限し、大暴走を防止
+                    friction = 0.885; // 0°完全水平で急ブレーキ
+                } else if (currentSpeed > 0.8) {
+                    // 通常滑走中のみ傾き介入が効く（微カーブ）
                     this.vx += roll * 0.0035;
-                    // 前後への重力影響も微調整程度
-                    this.vy -= pitch * 0.003;
+                    // 上下の向きを逆転：スマホを奥に倒す(pitch>0)で手前(+Y)、手前に起こす(pitch<0)で奥(-Y)
+                    this.vy += pitch * 0.004; 
+                } else {
+                    // スピードが落ちてきたら一気に強いブレーキ（静止摩擦）
+                    friction = 0.82;
                 }
 
                 this.vx *= friction;
@@ -473,18 +473,19 @@
                 // 壁バウンド
                 if (this.x - this.radius < 14) {
                     this.x = 14 + this.radius;
-                    this.vx *= -0.4;
+                    this.vx *= -0.35;
                 } else if (this.x + this.radius > width - 14) {
                     this.x = width - 14 - this.radius;
-                    this.vx *= -0.4;
+                    this.vx *= -0.35;
                 }
 
                 if (this.y - this.radius < 15) {
                     this.y = 15 + this.radius;
-                    this.vy *= -0.4;
+                    this.vy *= -0.35;
                 }
 
-                if (Math.hypot(this.vx, this.vy) < 0.1) {
+                // 完全静止判定（閾値を引き上げて早めにロック）
+                if (currentSpeed < 0.16) {
                     this.vx = 0;
                     this.vy = 0;
                     this.stopped = true;
@@ -492,14 +493,13 @@
             }
 
             draw(ctx) {
-                // 軌跡
                 for (let i = 0; i < this.trail.length; i++) {
                     const p = this.trail[i];
                     ctx.beginPath();
                     ctx.arc(p.x, p.y, this.radius * (i / this.trail.length), 0, Math.PI * 2);
                     ctx.fillStyle = (displayAngle <= 2) 
-                        ? `rgba(16, 185, 129, ${i / 25})`
-                        : `rgba(255, 255, 255, ${i / 35})`;
+                        ? `rgba(16, 185, 129, ${i / 22})`
+                        : `rgba(255, 255, 255, ${i / 30})`;
                     ctx.fill();
                 }
 
@@ -514,13 +514,11 @@
                     ctx.fill();
                 }
 
-                // 影
                 ctx.beginPath();
                 ctx.arc(2, 5, this.radius, 0, Math.PI * 2);
                 ctx.fillStyle = 'rgba(0,0,0,0.55)';
                 ctx.fill();
 
-                // ストーン本体
                 ctx.beginPath();
                 ctx.arc(0, 0, this.radius, 0, Math.PI * 2);
                 if (this.rarity.name === 'gold') {
@@ -541,14 +539,14 @@
                 ctx.lineWidth = 3.5;
                 ctx.stroke();
 
-                // 外周の細い白リング
+                // iOS水準器の外周白リング
                 ctx.beginPath();
                 ctx.arc(0, 0, this.radius - 1, 0, Math.PI * 2);
                 ctx.strokeStyle = this.rarity.stroke;
                 ctx.lineWidth = 1.6;
                 ctx.stroke();
 
-                // 中央の数字（iOS水準器フォント風）
+                // 中央の数字（0°フォント風）
                 ctx.fillStyle = (this.rarity.name === 'white') ? '#000000' : '#ffffff';
                 ctx.font = '300 13px -apple-system, BlinkMacSystemFont, sans-serif';
                 ctx.textAlign = 'center';
@@ -610,12 +608,11 @@
             roll = r;
         }
 
-        // PCデバッグ
         window.addEventListener('keydown', (e) => {
             if (e.key === 'ArrowLeft') roll = Math.max(-25, roll - 3);
             if (e.key === 'ArrowRight') roll = Math.min(25, roll + 3);
-            if (e.key === 'ArrowUp') pitch = Math.max(-30, pitch - 5);  // 手前起こし(BOOST)
-            if (e.key === 'ArrowDown') pitch = Math.min(30, pitch + 5); // 奥倒し(SLOW)
+            if (e.key === 'ArrowUp') pitch = Math.max(-30, pitch - 5);
+            if (e.key === 'ArrowDown') pitch = Math.min(30, pitch + 5);
             if (e.key === ' ' && gameState === STATES.AIMING) executeLaunch();
         });
 
@@ -655,7 +652,7 @@
         }
 
         /* ==========================================================
-           ワンタップ即時発射（長押し廃止 ＆ 角度逆転）
+           ワンタップ高速発射（速度アップ版）
         ========================================================== */
         window.addEventListener('pointerdown', (e) => {
             if (gameState !== STATES.AIMING) return;
@@ -671,21 +668,13 @@
 
             const stone = new Stone(startX, startY, currentPlayer, selectedRarity);
 
-            // 狙い方向（左右の傾き）
             const angleRad = (-90 + (roll * 0.9)) * (Math.PI / 180);
 
-            /*
-               発射速度の計算：
-               - 標準速度でちょうど中心（houseY）付近に到達する基礎初速（約13.2）
-               - 手前に起こす（手前傾 pitch < 0）ほど速い（BOOST）
-               - 奥に倒す（前傾 pitch > 0）ほど遅い（SLOW）
-               - 振れ幅を狭めに（±15%程度）抑えて安定化
-            */
-            const pitchSpeedMod = 1.0 - (pitch * 0.007); // 逆転：pitchが負（手前）でプラス、正（奥）でマイナス
+            // 速度アップ調整：打ち出しを速く（係数を0.32から0.46へ増強）
+            const pitchSpeedMod = 1.0 - (pitch * 0.007);
             const clampedMod = Math.max(0.85, Math.min(1.15, pitchSpeedMod));
 
-            // 標準初速（画面サイズに応じた最適値）
-            const baseSpeed = Math.sqrt((startY - houseY) * 0.32);
+            const baseSpeed = Math.sqrt((startY - houseY) * 0.46);
             const finalSpeed = baseSpeed * clampedMod;
 
             stone.vx = Math.cos(angleRad) * finalSpeed;
@@ -698,7 +687,7 @@
 
             if (clampedMod > 1.04) showActionMsg("BOOST SHOT!", 800);
             else if (clampedMod < 0.96) showActionMsg("SLOW SHOT", 800);
-            else showActionMsg("PERFECT SPEED!", 800);
+            else showActionMsg("SPEED SHOT!", 800);
         }
 
         function showActionMsg(text, duration = 1400) {
@@ -835,7 +824,7 @@
         }
 
         /* ==========================================================
-           紙吹雪（コンフェッティ）祝福演出
+           紙吹雪演出
         ========================================================== */
         const confettiCanvas = document.getElementById('confetti-canvas');
         const cCtx = confettiCanvas.getContext('2d');
@@ -865,7 +854,7 @@
             confettiPieces.forEach(p => {
                 p.x += p.vx;
                 p.y += p.vy;
-                p.vy += 0.45; // 重力
+                p.vy += 0.45;
                 p.rot += p.rotSpeed;
                 cCtx.save();
                 cCtx.translate(p.x, p.y);
@@ -874,7 +863,6 @@
                 cCtx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size * 0.6);
                 cCtx.restore();
             });
-            // 画面外を削除
             confettiPieces = confettiPieces.filter(p => p.y < height + 50);
         }
 
@@ -924,12 +912,133 @@
         }
 
         /* ==========================================================
+           1ページ目：説明映像シミュレーター（自動ループアニメ）
+        ========================================================== */
+        const demoCanvas = document.getElementById('demo-canvas');
+        const dCtx = demoCanvas.getContext('2d');
+        const demoCaption = document.getElementById('demo-caption');
+        let demoFrame = 0;
+
+        function updateDemoVideo() {
+            demoFrame++;
+            const t = (demoFrame % 360); // 6秒周期 (60fps想定)
+            dCtx.clearRect(0, 0, 320, 155);
+
+            // 背景とハウス
+            dCtx.strokeStyle = 'rgba(255,255,255,0.1)';
+            dCtx.strokeRect(10, 0, 300, 155);
+
+            const hX = 160, hY = 40;
+            const rings = [
+                { r: 35, col: 'rgba(59, 130, 246, 0.25)', border: 'rgba(59, 130, 246, 0.5)' },
+                { r: 23, col: 'rgba(255, 255, 255, 0.1)', border: 'rgba(255, 255, 255, 0.4)' },
+                { r: 12, col: 'rgba(239, 68, 68, 0.3)', border: 'rgba(239, 68, 68, 0.7)' },
+                { r: 4,  col: '#ffffff', border: '#fff' }
+            ];
+            rings.forEach(r => {
+                dCtx.beginPath();
+                dCtx.arc(hX, hY, r.r, 0, Math.PI * 2);
+                dCtx.fillStyle = r.col; dCtx.fill();
+                dCtx.strokeStyle = r.border; dCtx.stroke();
+            });
+
+            if (t < 120) {
+                // シーン1: 発射（LAUNCH）
+                demoCaption.innerText = "1. タップで即発射！スマホ手前起こしで高速ショット";
+                const p = t / 120;
+                const stoneY = 135 - p * 75;
+                drawDemoStone(160, stoneY, '#38bdf8', '5x', '#ffffff');
+
+                // タップ波紋
+                if (t < 25) {
+                    dCtx.beginPath();
+                    dCtx.arc(160, 135, t * 1.5, 0, Math.PI * 2);
+                    dCtx.strokeStyle = `rgba(56, 189, 248, ${1 - t/25})`;
+                    dCtx.stroke();
+                }
+            } else if (t < 240) {
+                // シーン2: 水平0°急停止（0° BRAKE）
+                demoCaption.innerText = "2. 0°完全水平で緑に光り、ピタッと急ブレーキ！";
+                const p = (t - 120) / 120;
+                const stoneY = 60 - Math.sin(p * Math.PI / 2) * 20;
+
+                // 0度緑色発光エフェクト
+                dCtx.fillStyle = 'rgba(16, 185, 129, 0.15)';
+                dCtx.fillRect(0, 0, 320, 155);
+
+                drawDemoStone(160, stoneY, '#38bdf8', '10x', '#ffffff');
+
+                // 0°インジケータ
+                dCtx.beginPath();
+                dCtx.arc(160, stoneY, 20 + Math.sin(t*0.2)*2, 0, Math.PI * 2);
+                dCtx.strokeStyle = '#10b981';
+                dCtx.lineWidth = 2;
+                dCtx.stroke();
+            } else {
+                // シーン3: 高得点ストーン（GOLD & GREEN RARE）
+                demoCaption.innerText = "3. 高速目押しで金色(50x)や緑色(30x)の激レア石を狙え！";
+                const p = (t - 240) / 120;
+                
+                // 金色オーラストーン
+                drawDemoStone(120, 70, '#fb923c', '50x', '#facc15', true);
+                drawDemoStone(200, 70, '#38bdf8', '30x', '#10b981');
+
+                dCtx.fillStyle = '#facc15';
+                dCtx.font = '700 11px sans-serif';
+                dCtx.textAlign = 'center';
+                dCtx.fillText("JACKPOT 50x!!", 120, 105);
+            }
+        }
+
+        function drawDemoStone(x, y, playerCol, label, strokeCol, isGold = false) {
+            dCtx.save();
+            dCtx.translate(x, y);
+
+            if (isGold) {
+                dCtx.beginPath();
+                dCtx.arc(0, 0, 18, 0, Math.PI * 2);
+                dCtx.fillStyle = 'rgba(234, 179, 8, 0.4)';
+                dCtx.fill();
+            }
+
+            dCtx.beginPath();
+            dCtx.arc(0, 0, 14, 0, Math.PI * 2);
+            dCtx.fillStyle = isGold ? '#ca8a04' : '#1e293b';
+            dCtx.fill();
+
+            dCtx.beginPath();
+            dCtx.arc(0, 0, 11, 0, Math.PI * 2);
+            dCtx.strokeStyle = playerCol;
+            dCtx.lineWidth = 2.5;
+            dCtx.stroke();
+
+            dCtx.beginPath();
+            dCtx.arc(0, 0, 13, 0, Math.PI * 2);
+            dCtx.strokeStyle = strokeCol;
+            dCtx.lineWidth = 1.2;
+            dCtx.stroke();
+
+            dCtx.fillStyle = '#ffffff';
+            dCtx.font = '300 9px sans-serif';
+            dCtx.textAlign = 'center';
+            dCtx.textBaseline = 'middle';
+            dCtx.fillText(label, 0, 1);
+
+            dCtx.restore();
+        }
+
+        /* ==========================================================
            メインゲームループ
         ========================================================== */
         let lastZeroStatus = false;
 
         function loop() {
             requestAnimationFrame(loop);
+
+            // ルール画面が開いているときは説明映像シミュレーターを動かす
+            if (document.getElementById('start-modal').style.display !== 'none') {
+                updateDemoVideo();
+            }
 
             displayAngle = Math.round(Math.hypot(pitch, roll));
             document.getElementById('angle-display').innerText = `${displayAngle}°`;
@@ -956,21 +1065,20 @@
             }
             lastZeroStatus = isZero;
 
-            // 発射ガイドHUDのリアルタイム表示更新
+            // 発射ガイドHUD
             if (gameState === STATES.AIMING) {
                 const pGuide = document.getElementById('tilt-pitch-guide');
                 if (pitch < -8) {
-                    pGuide.innerText = `📱 手前傾: BOOST (強打)`;
+                    pGuide.innerText = `📱 手前傾: BOOST (速い)`;
                     pGuide.style.color = '#38bdf8';
                 } else if (pitch > 8) {
-                    pGuide.innerText = `📱 奥傾: SLOW (弱打)`;
+                    pGuide.innerText = `📱 奥傾: SLOW (遅い)`;
                     pGuide.style.color = '#94a3b8';
                 } else {
                     pGuide.innerText = `📱 ニュートラル (標準速度)`;
                     pGuide.style.color = '#10b981';
                 }
 
-                // スロット目押しルーレット更新
                 rouletteFrameCounter++;
                 const curRarity = RARITIES[rouletteIdx];
                 if (rouletteFrameCounter >= curRarity.durationFrames) {
@@ -984,7 +1092,6 @@
                 }
             }
 
-            // 物理演算
             if (gameState === STATES.SWEEPING) {
                 let allStopped = true;
                 stonesOnIce.forEach(s => {
@@ -995,13 +1102,10 @@
                 if (allStopped) endTurn();
             }
 
-            // 紙吹雪アニメ
             updateAndDrawConfetti();
 
-            // 描画
             ctx.clearRect(0, 0, width, height);
 
-            // レーン境界
             ctx.strokeStyle = 'rgba(255, 255, 255, 0.12)';
             ctx.lineWidth = 1;
             ctx.beginPath();
@@ -1009,7 +1113,6 @@
             ctx.moveTo(width - 14, 0); ctx.lineTo(width - 14, height);
             ctx.stroke();
 
-            // ハウス同心円
             for (let ring of houseRings) {
                 ctx.beginPath();
                 ctx.arc(houseX, houseY, ring.r, 0, Math.PI * 2);
@@ -1020,7 +1123,6 @@
                 ctx.stroke();
             }
 
-            // 十字ライン
             ctx.strokeStyle = 'rgba(255, 255, 255, 0.2)';
             ctx.lineWidth = 1;
             ctx.beginPath();
@@ -1033,7 +1135,6 @@
             ctx.textAlign = 'center';
             ctx.fillText("10 PT", houseX, houseY + 3);
 
-            // エイミング照準線
             if (gameState === STATES.AIMING) {
                 const startX = width / 2;
                 const startY = height - 90;
@@ -1055,11 +1156,9 @@
                 ctx.stroke();
             }
 
-            // ストーン描画
             stonesOnIce.forEach(s => s.draw(ctx));
         }
 
-        // 初期化実行
         resize();
         requestAnimationFrame(loop);
     </script>
