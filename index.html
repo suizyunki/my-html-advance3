@@ -1,0 +1,1031 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>LEVEL ZERO : TILT CURLING</title>
+    <style>
+        :root {
+            --color-zero: #10b981;  /* iOS水準器の緑 */
+            --color-tilt: #ef4444;  /* iOS水準器の赤 */
+            --p1-color: #38bdf8;    /* P1 シアン */
+            --p2-color: #fb923c;    /* P2 オレンジ */
+            --bg-color: #000000;
+        }
+
+        * {
+            box-sizing: border-box;
+            user-select: none;
+            -webkit-user-select: none;
+            margin: 0; padding: 0;
+        }
+
+        body, html {
+            width: 100%; height: 100%;
+            overflow: hidden;
+            background-color: var(--bg-color);
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Segoe UI", Roboto, sans-serif;
+            color: #ffffff;
+            touch-action: none;
+            -webkit-text-size-adjust: 100%;
+            transition: background-color 0.25s ease;
+        }
+
+        /* 水準器の背景カラー膜（0度＝緑、傾き＝赤） */
+        #level-bg-tint {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.2s ease, background-color 0.2s ease;
+            z-index: 1;
+        }
+
+        /* 微細グリッド */
+        .grid-bg {
+            position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
+            background-image: 
+                linear-gradient(rgba(255, 255, 255, 0.035) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.035) 1px, transparent 1px);
+            background-size: 32px 32px;
+            pointer-events: none;
+            z-index: 2;
+        }
+
+        #game-canvas {
+            position: absolute; top: 0; left: 0;
+            width: 100%; height: 100%;
+            z-index: 3;
+        }
+
+        /* ====================
+           スコアボード表（テーブルUI）
+        ==================== */
+        #scoreboard-container {
+            position: absolute; top: 12px; left: 50%;
+            transform: translateX(-50%);
+            width: 92%; max-width: 420px;
+            background: rgba(18, 18, 20, 0.78);
+            backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 14px;
+            padding: 8px 12px;
+            z-index: 20;
+            pointer-events: none;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+        }
+
+        .score-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.78rem;
+            text-align: center;
+        }
+        .score-table th {
+            color: #94a3b8; font-weight: 500; padding: 2px 4px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .score-table td {
+            padding: 4px; font-weight: 700;
+        }
+        .p1-row { color: var(--p1-color); }
+        .p2-row { color: var(--p2-color); }
+        .active-round-col {
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 4px;
+        }
+
+        .stones-left-dots {
+            display: inline-flex; gap: 4px; vertical-align: middle; margin-left: 4px;
+        }
+        .stone-dot {
+            width: 7px; height: 7px; border-radius: 50%;
+            background: rgba(255,255,255,0.2);
+            border: 1px solid currentColor;
+        }
+        .stone-dot.charged { background: currentColor; }
+
+        /* ====================
+           水準器 HUD（iOS風）
+        ==================== */
+        #spirit-hud {
+            position: absolute;
+            bottom: 24px; left: 50%;
+            transform: translateX(-50%);
+            width: 150px; height: 150px;
+            pointer-events: none;
+            z-index: 10;
+            display: flex; justify-content: center; align-items: center;
+        }
+
+        .hud-outer-ring {
+            position: absolute;
+            width: 140px; height: 140px;
+            border: 1.5px solid rgba(255, 255, 255, 0.6);
+            border-radius: 50%;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        .hud-bubble {
+            position: absolute;
+            width: 110px; height: 110px;
+            border: 1.5px solid rgba(255, 255, 255, 0.9);
+            border-radius: 50%;
+            display: flex; justify-content: center; align-items: center;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px);
+            transition: border-color 0.2s, background-color 0.2s;
+        }
+
+        #angle-display {
+            font-size: 2.1rem;
+            font-weight: 200;
+            letter-spacing: -1px;
+            color: #ffffff;
+        }
+
+        /* 0度到達時 */
+        .hud-zero .hud-outer-ring {
+            border-color: #ffffff;
+            box-shadow: 0 0 20px rgba(16, 185, 129, 0.7);
+        }
+        .hud-zero .hud-bubble {
+            border-color: #ffffff;
+            background: rgba(16, 185, 129, 0.3);
+        }
+
+        /* ====================
+           初速インジケータ & 倍率ルーレット
+        ==================== */
+        #shot-guide-hud {
+            position: absolute; bottom: 195px; left: 50%;
+            transform: translateX(-50%);
+            display: flex; flex-direction: column; align-items: center; gap: 8px;
+            z-index: 15; pointer-events: none;
+            opacity: 0; transition: opacity 0.2s;
+        }
+
+        #multiplier-bar {
+            display: flex; gap: 5px;
+            background: rgba(0,0,0,0.65);
+            border: 1px solid rgba(255,255,255,0.15);
+            padding: 4px 8px; border-radius: 16px;
+        }
+        .mult-badge {
+            font-size: 0.75rem; font-weight: 700; padding: 4px 7px; border-radius: 10px;
+            opacity: 0.25; border: 1px solid transparent;
+            transition: transform 0.05s;
+        }
+        .mult-badge.active {
+            opacity: 1; transform: scale(1.18);
+        }
+        .mult-white { color: #fff; border-color: #fff; }
+        .mult-black { color: #94a3b8; border-color: #64748b; }
+        .mult-red { color: #ef4444; border-color: #ef4444; }
+        .mult-green { color: #10b981; border-color: #10b981; }
+        .mult-gold { color: #facc15; border-color: #facc15; }
+
+        #tilt-pitch-guide {
+            font-size: 0.75rem; font-weight: 600; color: #94a3b8;
+            letter-spacing: 0.5px;
+        }
+
+        #charge-meter-wrap {
+            width: 140px; height: 5px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 3px; overflow: hidden;
+        }
+        #charge-meter-fill {
+            width: 0%; height: 100%;
+            background: linear-gradient(90deg, #38bdf8, #ef4444);
+        }
+
+        /* ポップアップメッセージ */
+        #action-msg {
+            position: absolute; top: 44%; left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 1.7rem; font-weight: 800; letter-spacing: 2px;
+            text-shadow: 0 4px 25px rgba(0,0,0,0.9);
+            text-align: center; pointer-events: none; z-index: 50;
+            opacity: 0; transition: opacity 0.3s, transform 0.3s;
+        }
+
+        /* ====================
+           モーダル画面
+        ==================== */
+        .modal-screen {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.88);
+            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            z-index: 100; padding: 25px; text-align: center;
+        }
+        .modal-title {
+            font-size: 2.2rem; font-weight: 800; letter-spacing: 3px; margin-bottom: 6px;
+            background: linear-gradient(180deg, #ffffff 0%, #94a3b8 100%);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        }
+        .modal-desc {
+            font-size: 0.88rem; color: #94a3b8; line-height: 1.6; margin-bottom: 22px; max-width: 330px;
+        }
+        .styled-btn {
+            padding: 16px 42px;
+            background: #ffffff; color: #000000;
+            border: none; border-radius: 40px;
+            font-size: 1.05rem; font-weight: 700; letter-spacing: 1px;
+            cursor: pointer; box-shadow: 0 4px 20px rgba(255,255,255,0.25);
+            transition: transform 0.1s;
+        }
+        .styled-btn:active { transform: scale(0.96); }
+
+        .rule-list {
+            display: flex; flex-direction: column; gap: 10px; width: 100%; max-width: 320px; margin-bottom: 25px;
+        }
+        .rule-card {
+            background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 12px; padding: 10px 14px; text-align: left; font-size: 0.82rem;
+            display: flex; align-items: center; gap: 12px;
+        }
+    </style>
+</head>
+<body>
+    <div id="level-bg-tint"></div>
+    <div class="grid-bg"></div>
+    <canvas id="game-canvas"></canvas>
+
+    <!-- カーリング スコアボード表 -->
+    <div id="scoreboard-container">
+        <table class="score-table">
+            <thead>
+                <tr>
+                    <th style="text-align: left; width: 38%;">TEAM</th>
+                    <th id="th-r1">R1</th>
+                    <th id="th-r2">R2</th>
+                    <th id="th-r3">R3</th>
+                    <th style="color: #fff;">TOTAL</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr class="p1-row">
+                    <td style="text-align: left;">
+                        P1 BLUE <div class="stones-left-dots" id="p1-stones-dots"></div>
+                    </td>
+                    <td id="p1-r1">-</td>
+                    <td id="p1-r2">-</td>
+                    <td id="p1-r3">-</td>
+                    <td id="p1-total" style="font-size: 0.95rem;">0</td>
+                </tr>
+                <tr class="p2-row">
+                    <td style="text-align: left;">
+                        P2 ORANGE <div class="stones-left-dots" id="p2-stones-dots"></div>
+                    </td>
+                    <td id="p2-r1">-</td>
+                    <td id="p2-r2">-</td>
+                    <td id="p2-r3">-</td>
+                    <td id="p2-total" style="font-size: 0.95rem;">0</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- 水準器 HUD -->
+    <div id="spirit-hud">
+        <div class="hud-outer-ring"></div>
+        <div class="hud-bubble" id="hud-bubble">
+            <div id="angle-display">0°</div>
+        </div>
+    </div>
+
+    <!-- 初速ガイド & ルーレット HUD -->
+    <div id="shot-guide-hud">
+        <div id="multiplier-bar">
+            <div class="mult-badge mult-white" id="mb-white">5x</div>
+            <div class="mult-badge mult-black" id="mb-black">10x</div>
+            <div class="mult-badge mult-red" id="mb-red">15x</div>
+            <div class="mult-badge mult-green" id="mb-green">30x</div>
+            <div class="mult-badge mult-gold" id="mb-gold">50x</div>
+        </div>
+        <div id="tilt-pitch-guide">📱 前傾：FAST / 手前傾：SLOW</div>
+        <div id="charge-meter-wrap">
+            <div id="charge-meter-fill"></div>
+        </div>
+    </div>
+
+    <div id="action-msg"></div>
+
+    <!-- 開始モーダル -->
+    <div id="start-modal" class="modal-screen">
+        <div class="modal-title">LEVEL ZERO</div>
+        <div style="font-size: 0.8rem; letter-spacing: 4px; color: #38bdf8; margin-bottom: 20px; font-weight: 700;">TILT CURLING</div>
+        
+        <div class="rule-list">
+            <div class="rule-card">
+                <span style="font-size: 1.4rem;">🎯</span>
+                <span><b>試合形式</b><br>全3ラウンド制 / 1ラウンド各2球（合計4球）を交互に投球。</span>
+            </div>
+            <div class="rule-card">
+                <span style="font-size: 1.4rem;">📱</span>
+                <span><b>発射＆前後の傾き</b><br>画面長押し＋<b>奥に倒すと高速、手前で低速</b>に発射。</span>
+            </div>
+            <div class="rule-card">
+                <span style="font-size: 1.4rem;">🟢</span>
+                <span><b>0°でブレーキ / 傾きで滑る</b><br>水平に保つと急停止！傾けると重力で滑走＆カーブ。</span>
+            </div>
+            <div class="rule-card">
+                <span style="font-size: 1.4rem;">⚡</span>
+                <span><b>激レア倍率（30x, 50x）</b><br>高速回転するスロットの目押しで高得点を狙え！</span>
+            </div>
+        </div>
+
+        <button class="styled-btn" onclick="initSensorAndStart()">GAME START</button>
+    </div>
+
+    <!-- 交代モーダル -->
+    <div id="turn-modal" class="modal-screen" style="display: none;">
+        <div id="turn-player-tag" style="font-size: 1.1rem; font-weight: 800; margin-bottom: 8px;">PLAYER 1'S TURN</div>
+        <div class="modal-title" id="turn-title">ROUND 1</div>
+        <div class="modal-desc" id="turn-instruction">スマホを渡してください。<br>相手の石を弾き飛ばして高得点エリアを奪取しよう！</div>
+        <button class="styled-btn" onclick="startTurnAim()">READY</button>
+    </div>
+
+    <!-- 最終結果モーダル -->
+    <div id="result-modal" class="modal-screen" style="display: none;">
+        <div style="font-size: 0.8rem; letter-spacing: 3px; color: #38bdf8; margin-bottom: 8px;">FINAL RESULT</div>
+        <div class="modal-title" id="winner-text">PLAYER 1 WINS!</div>
+        <div class="modal-desc" id="final-stats" style="font-size: 1rem; color: #fff;"></div>
+        <button class="styled-btn" onclick="restartMatch()">REMATCH</button>
+    </div>
+
+    <script>
+        /* ==========================================================
+           状態管理 & スコアテーブル
+        ========================================================== */
+        const STATES = { TITLE: 0, READY_PASS: 1, AIMING: 2, SWEEPING: 3, TURN_RESULT: 4, MATCH_RESULT: 5 };
+        let gameState = STATES.TITLE;
+
+        const TOTAL_ROUNDS = 3;
+        const STONES_PER_PLAYER = 2; // 1ラウンドあたり各2球 (計4球)
+        
+        let currentRound = 1;
+        let currentPlayer = 1;      // 1 or 2
+        let currentStoneInRound = 0;// 0..3 (1投目〜4投目)
+
+        // ラウンドごとのスコア記録
+        let p1RoundScores = [0, 0, 0];
+        let p2RoundScores = [0, 0, 0];
+
+        /* ==========================================================
+           レアリティ設定 & スロット（ウェイト調整）
+        ========================================================== */
+        // durationFrames: 表示フレーム数（小さいほど一瞬で通過する激レア）
+        const RARITIES = [
+            { name: 'white', mult: 5,  color: '#ffffff', stroke: '#ffffff', label: '5x',  durationFrames: 22 },
+            { name: 'black', mult: 10, color: '#1e293b', stroke: '#94a3b8', label: '10x', durationFrames: 18 },
+            { name: 'red',   mult: 15, color: '#ef4444', stroke: '#ffffff', label: '15x', durationFrames: 14 },
+            { name: 'green', mult: 30, color: '#10b981', stroke: '#ffffff', label: '30x', durationFrames: 4  }, // 激レア（一瞬）
+            { name: 'gold',  mult: 50, color: '#eab308', stroke: '#fef08a', label: '50x', durationFrames: 2  }  // 超激レア（超高速）
+        ];
+        let rouletteIdx = 0;
+        let rouletteFrameCounter = 0;
+
+        // 傾きセンサー（平置き0°基準）
+        let pitch = 0; // 前後（前傾き > 0、手前起こし < 0）
+        let roll = 0;  // 左右
+        let displayAngle = 0;
+
+        // タッチチャージ
+        let isTouching = false;
+        let chargePower = 0;
+        let chargeSpeed = 0.022;
+
+        // キャンバス & 物理
+        const canvas = document.getElementById('game-canvas');
+        const ctx = canvas.getContext('2d');
+        let width = 0, height = 0;
+
+        let houseX = 0, houseY = 0;
+        let houseRings = [];
+
+        let stonesOnIce = [];
+        let activeStone = null;
+
+        /* ==========================================================
+           ストーン クラス（重厚な重量感と改良物理）
+        ========================================================== */
+        class Stone {
+            constructor(x, y, player, rarity) {
+                this.x = x;
+                this.y = y;
+                this.vx = 0;
+                this.vy = 0;
+                this.radius = 23;
+                this.mass = 2.2; // 重量を増加
+                this.player = player;
+                this.rarity = rarity;
+                this.stopped = false;
+                this.trail = [];
+            }
+
+            update() {
+                if (this.stopped) return;
+
+                this.trail.push({ x: this.x, y: this.y, alpha: 1.0 });
+                if (this.trail.length > 12) this.trail.shift();
+
+                /*
+                   物理挙動の改善：
+                   - 0度（水平）付近：動きが緩やかになって急激に止まる（ブレーキ）
+                   - 傾きが大きいとき：スマホの傾斜角度（重力）によって滑りやすくなり加速・旋回する
+                */
+                let friction = 0.970; // 基本の氷摩擦（滑りすぎを防止）
+
+                if (displayAngle <= 2) {
+                    // 0度水平キープ：ブレーキがかかり、安定してピタッと止まる
+                    friction = 0.905;
+                } else {
+                    // 傾いている時：傾斜による重力加速度を加算
+                    const gravityFactor = 0.009;
+                    this.vx += roll * gravityFactor;
+                    // pitch：奥に倒している(正)なら奥(-Y)へ加速、手前に起こしている(負)なら手前(+Y)へ
+                    this.vy -= pitch * gravityFactor * 0.7;
+
+                    // 傾きが大きいほど摩擦が減ってよく滑る
+                    const tiltSlip = Math.min(0.022, (displayAngle / 40) * 0.022);
+                    friction = 0.970 + tiltSlip;
+                }
+
+                // 速度減速
+                this.vx *= friction;
+                this.vy *= friction;
+
+                // 位置更新
+                this.x += this.vx;
+                this.y += this.vy;
+
+                // 左右壁バウンド
+                if (this.x - this.radius < 12) {
+                    this.x = 12 + this.radius;
+                    this.vx *= -0.55;
+                } else if (this.x + this.radius > width - 12) {
+                    this.x = width - 12 - this.radius;
+                    this.vx *= -0.55;
+                }
+
+                // 上壁バウンド
+                if (this.y - this.radius < 15) {
+                    this.y = 15 + this.radius;
+                    this.vy *= -0.5;
+                }
+
+                // 停止判定
+                const speed = Math.hypot(this.vx, this.vy);
+                if (speed < 0.08) {
+                    this.vx = 0;
+                    this.vy = 0;
+                    this.stopped = true;
+                }
+            }
+
+            draw(ctx) {
+                // 滑走の軌跡
+                for (let i = 0; i < this.trail.length; i++) {
+                    const p = this.trail[i];
+                    ctx.beginPath();
+                    ctx.arc(p.x, p.y, this.radius * (i / this.trail.length), 0, Math.PI * 2);
+                    ctx.fillStyle = (displayAngle <= 2) 
+                        ? `rgba(16, 185, 129, ${i / 26})`
+                        : `rgba(255, 255, 255, ${i / 35})`;
+                    ctx.fill();
+                }
+
+                ctx.save();
+                ctx.translate(this.x, this.y);
+
+                // 金色オーラ
+                if (this.rarity.name === 'gold') {
+                    ctx.beginPath();
+                    ctx.arc(0, 0, this.radius + 6, 0, Math.PI * 2);
+                    ctx.fillStyle = 'rgba(234, 179, 8, 0.35)';
+                    ctx.fill();
+                }
+
+                // 石の立体的な影
+                ctx.beginPath();
+                ctx.arc(2, 6, this.radius, 0, Math.PI * 2);
+                ctx.fillStyle = 'rgba(0,0,0,0.55)';
+                ctx.fill();
+
+                // ストーン本体
+                ctx.beginPath();
+                ctx.arc(0, 0, this.radius, 0, Math.PI * 2);
+                if (this.rarity.name === 'gold') {
+                    const grad = ctx.createLinearGradient(-this.radius, -this.radius, this.radius, this.radius);
+                    grad.addColorStop(0, '#fef08a');
+                    grad.addColorStop(0.5, '#ca8a04');
+                    grad.addColorStop(1, '#eab308');
+                    ctx.fillStyle = grad;
+                } else {
+                    ctx.fillStyle = this.rarity.color;
+                }
+                ctx.fill();
+
+                // プレイヤー識別リング
+                ctx.beginPath();
+                ctx.arc(0, 0, this.radius - 3.5, 0, Math.PI * 2);
+                ctx.strokeStyle = (this.player === 1) ? 'rgba(56, 189, 248, 0.95)' : 'rgba(251, 146, 60, 0.95)';
+                ctx.lineWidth = 3.5;
+                ctx.stroke();
+
+                // iOS水準器の外周白リング
+                ctx.beginPath();
+                ctx.arc(0, 0, this.radius - 1, 0, Math.PI * 2);
+                ctx.strokeStyle = this.rarity.stroke;
+                ctx.lineWidth = 1.6;
+                ctx.stroke();
+
+                // 中央の数字（0°フォント）
+                ctx.fillStyle = (this.rarity.name === 'white') ? '#000000' : '#ffffff';
+                ctx.font = '300 13px -apple-system, BlinkMacSystemFont, sans-serif';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText(this.rarity.label, 0, 1);
+
+                ctx.restore();
+            }
+        }
+
+        /* ==========================================================
+           リサイズ & ハウス設定
+        ========================================================== */
+        function resize() {
+            width = canvas.width = window.innerWidth;
+            height = canvas.height = window.innerHeight;
+            houseX = width / 2;
+            houseY = height * 0.28; // 上部スコアボードの下あたりに配置
+
+            houseRings = [
+                { r: width * 0.36, pts: 1,  color: 'rgba(59, 130, 246, 0.16)', border: 'rgba(59, 130, 246, 0.45)' },
+                { r: width * 0.24, pts: 3,  color: 'rgba(255, 255, 255, 0.08)', border: 'rgba(255, 255, 255, 0.3)' },
+                { r: width * 0.13, pts: 5,  color: 'rgba(239, 68, 68, 0.22)',   border: 'rgba(239, 68, 68, 0.55)' },
+                { r: width * 0.04, pts: 10, color: 'rgba(255, 255, 255, 0.45)', border: '#ffffff' }
+            ];
+        }
+        window.addEventListener('resize', resize);
+        resize();
+
+        /* ==========================================================
+           センサー処理
+        ========================================================== */
+        function initSensorAndStart() {
+            if (typeof DeviceOrientationEvent !== 'undefined' && typeof DeviceOrientationEvent.requestPermission === 'function') {
+                DeviceOrientationEvent.requestPermission()
+                    .then(permission => {
+                        if (permission === 'granted') {
+                            window.addEventListener('deviceorientation', handleOrientation, true);
+                        }
+                        startGame();
+                    })
+                    .catch(() => startGame());
+            } else {
+                window.addEventListener('deviceorientation', handleOrientation, true);
+                startGame();
+            }
+        }
+
+        function handleOrientation(e) {
+            let p = e.beta || 0;
+            let r = e.gamma || 0;
+
+            // 平置き0°正規化
+            if (p > 90) p = 180 - p;
+            else if (p < -90) p = -180 - p;
+
+            pitch = p;
+            roll = r;
+        }
+
+        // PCデバッグ操作（矢印キーで傾き・スペースでチャージ）
+        window.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowLeft') roll = Math.max(-30, roll - 4);
+            if (e.key === 'ArrowRight') roll = Math.min(30, roll + 4);
+            if (e.key === 'ArrowUp') pitch = Math.min(40, pitch + 5);
+            if (e.key === 'ArrowDown') pitch = Math.max(-40, pitch - 5);
+            if (e.key === ' ' && gameState === STATES.AIMING && !isTouching) {
+                startTouchCharge();
+            }
+        });
+        window.addEventListener('keyup', (e) => {
+            if (e.key === ' ' && gameState === STATES.AIMING && isTouching) {
+                releaseLaunch();
+            }
+        });
+
+        /* ==========================================================
+           ゲーム進行
+        ========================================================== */
+        function startGame() {
+            document.getElementById('start-modal').style.display = 'none';
+            currentRound = 1;
+            p1RoundScores = [0, 0, 0];
+            p2RoundScores = [0, 0, 0];
+            updateScoreTable();
+            prepareNextShot(1, 0);
+        }
+
+        function prepareNextShot(player, stoneInRound) {
+            currentPlayer = player;
+            currentStoneInRound = stoneInRound;
+            gameState = STATES.READY_PASS;
+
+            // 残り球数ドットの更新
+            updateStonesDots();
+
+            const modal = document.getElementById('turn-modal');
+            const playerTag = document.getElementById('turn-player-tag');
+            const title = document.getElementById('turn-title');
+            
+            playerTag.innerText = `PLAYER ${player}'S TURN`;
+            playerTag.style.color = (player === 1) ? 'var(--p1-color)' : 'var(--p2-color)';
+            title.innerText = `ROUND ${currentRound} (SHOT ${stoneInRound + 1}/4)`;
+            modal.style.display = 'flex';
+        }
+
+        function startTurnAim() {
+            document.getElementById('turn-modal').style.display = 'none';
+            gameState = STATES.AIMING;
+            chargePower = 0;
+            isTouching = false;
+
+            document.getElementById('shot-guide-hud').style.opacity = '1';
+        }
+
+        /* ==========================================================
+           発射操作（前後傾きで初速変化）
+        ========================================================== */
+        window.addEventListener('pointerdown', (e) => {
+            if (gameState !== STATES.AIMING) return;
+            startTouchCharge();
+        });
+
+        window.addEventListener('pointerup', (e) => {
+            if (gameState !== STATES.AIMING || !isTouching) return;
+            releaseLaunch();
+        });
+
+        function startTouchCharge() {
+            isTouching = true;
+            chargePower = 0.05;
+        }
+
+        function releaseLaunch() {
+            isTouching = false;
+            document.getElementById('shot-guide-hud').style.opacity = '0';
+
+            const selectedRarity = RARITIES[rouletteIdx];
+            const startX = width / 2;
+            const startY = height - 90;
+
+            const stone = new Stone(startX, startY, currentPlayer, selectedRarity);
+
+            // 狙い角度（左右の傾き）
+            const angleRad = (-90 + (roll * 1.1)) * (Math.PI / 180);
+
+            /*
+               発射初速の計算：
+               - スマホを奥に倒す（pitch > 0）と速い
+               - スマホを手前に起こす（pitch < 0）と遅い
+            */
+            const pitchSpeedModifier = 1 + (pitch * 0.025); // 前傾でブースト、手前傾で減速
+            const clampedModifier = Math.max(0.45, Math.min(1.6, pitchSpeedModifier));
+
+            // チャージパワー(0~1)と傾き補正を合算した初速
+            const baseSpeed = 5.0 + (chargePower * 11.5);
+            const finalSpeed = baseSpeed * clampedModifier;
+
+            stone.vx = Math.cos(angleRad) * finalSpeed;
+            stone.vy = Math.sin(angleRad) * finalSpeed;
+
+            stonesOnIce.push(stone);
+            activeStone = stone;
+
+            gameState = STATES.SWEEPING;
+            showActionMsg(pitch > 5 ? "FAST LAUNCH!" : (pitch < -5 ? "SLOW LAUNCH" : "SHOT!"), 900);
+        }
+
+        function showActionMsg(text, duration = 1400) {
+            const el = document.getElementById('action-msg');
+            el.innerText = text;
+            el.style.opacity = '1';
+            el.style.transform = 'translate(-50%, -50%) scale(1.1)';
+            setTimeout(() => {
+                el.style.opacity = '0';
+                el.style.transform = 'translate(-50%, -50%) scale(0.9)';
+            }, duration);
+        }
+
+        /* ==========================================================
+           スコアテーブル更新 & 投球ドット
+        ========================================================== */
+        function updateStonesDots() {
+            const p1Dots = document.getElementById('p1-stones-dots');
+            const p2Dots = document.getElementById('p2-stones-dots');
+            p1Dots.innerHTML = '';
+            p2Dots.innerHTML = '';
+
+            // ラウンド内で投げた回数（P1: 0, 2投目 / P2: 1, 3投目）
+            let p1ShotCount = Math.floor((currentStoneInRound + 1) / 2);
+            let p2ShotCount = Math.floor(currentStoneInRound / 2);
+
+            for (let i = 0; i < STONES_PER_PLAYER; i++) {
+                p1Dots.innerHTML += `<div class="stone-dot ${i >= p1ShotCount ? 'charged' : ''}"></div>`;
+                p2Dots.innerHTML += `<div class="stone-dot ${i >= p2ShotCount ? 'charged' : ''}"></div>`;
+            }
+        }
+
+        function updateScoreTable() {
+            // ラウンド列のハイライト
+            for (let r = 1; r <= 3; r++) {
+                const th = document.getElementById(`th-r${r}`);
+                if (r === currentRound) th.classList.add('active-round-col');
+                else th.classList.remove('active-round-col');
+            }
+
+            // 各ラウンドスコア反映
+            document.getElementById('p1-r1').innerText = p1RoundScores[0] || (currentRound > 1 ? '0' : '-');
+            document.getElementById('p1-r2').innerText = p1RoundScores[1] || (currentRound > 2 ? '0' : '-');
+            document.getElementById('p1-r3').innerText = p1RoundScores[2] || '-';
+            
+            document.getElementById('p2-r1').innerText = p2RoundScores[0] || (currentRound > 1 ? '0' : '-');
+            document.getElementById('p2-r2').innerText = p2RoundScores[1] || (currentRound > 2 ? '0' : '-');
+            document.getElementById('p2-r3').innerText = p2RoundScores[2] || '-';
+
+            const p1Tot = p1RoundScores.reduce((a, b) => a + b, 0);
+            const p2Tot = p2RoundScores.reduce((a, b) => a + b, 0);
+            document.getElementById('p1-total').innerText = p1Tot;
+            document.getElementById('p2-total').innerText = p2Tot;
+        }
+
+        /* ==========================================================
+           衝突判定
+        ========================================================== */
+        function handleCollisions() {
+            for (let i = 0; i < stonesOnIce.length; i++) {
+                for (let j = i + 1; j < stonesOnIce.length; j++) {
+                    const s1 = stonesOnIce[i];
+                    const s2 = stonesOnIce[j];
+                    const dx = s2.x - s1.x;
+                    const dy = s2.y - s1.y;
+                    const dist = Math.hypot(dx, dy);
+
+                    if (dist < s1.radius + s2.radius) {
+                        const nx = dx / dist;
+                        const ny = dy / dist;
+                        const kx = s1.vx - s2.vx;
+                        const ky = s1.vy - s2.vy;
+                        const p = 2 * (nx * kx + ny * ky) / (s1.mass + s2.mass);
+
+                        s1.vx -= p * s2.mass * nx * 0.88;
+                        s1.vy -= p * s2.mass * ny * 0.88;
+                        s2.vx += p * s1.mass * nx * 0.88;
+                        s2.vy += p * s1.mass * ny * 0.88;
+
+                        const overlap = (s1.radius + s2.radius - dist) / 2;
+                        s1.x -= nx * overlap;
+                        s1.y -= ny * overlap;
+                        s2.x += nx * overlap;
+                        s2.y += ny * overlap;
+
+                        s1.stopped = false;
+                        s2.stopped = false;
+
+                        if (navigator.vibrate) navigator.vibrate(25);
+                    }
+                }
+            }
+        }
+
+        // ラウンド終了時のスコア集計（アーケード加算制）
+        function tallyRoundScores() {
+            let p1Gain = 0, p2Gain = 0;
+            stonesOnIce.forEach(s => {
+                const dist = Math.hypot(s.x - houseX, s.y - houseY);
+                let pts = 0;
+                for (let ring of houseRings) {
+                    if (dist <= ring.r + s.radius * 0.5) pts = Math.max(pts, ring.pts);
+                }
+                const score = pts * s.rarity.mult;
+                if (s.player === 1) p1Gain += score;
+                else p2Gain += score;
+            });
+            p1RoundScores[currentRound - 1] = p1Gain;
+            p2RoundScores[currentRound - 1] = p2Gain;
+            updateScoreTable();
+        }
+
+        function endTurn() {
+            gameState = STATES.TURN_RESULT;
+            tallyRoundScores();
+
+            // 直前のストーンの得点
+            const dist = Math.hypot(activeStone.x - houseX, activeStone.y - houseY);
+            let earned = 0;
+            for (let ring of houseRings) {
+                if (dist <= ring.r + activeStone.radius * 0.5) earned = Math.max(earned, ring.pts);
+            }
+            const pts = earned * activeStone.rarity.mult;
+            showActionMsg(pts > 0 ? `+${pts} PTS!` : "OUT OF HOUSE", 1400);
+
+            setTimeout(() => {
+                currentStoneInRound++;
+                if (currentStoneInRound >= STONES_PER_PLAYER * 2) {
+                    // ラウンド終了
+                    if (currentRound < TOTAL_ROUNDS) {
+                        currentRound++;
+                        stonesOnIce = [];
+                        showActionMsg(`ROUND ${currentRound} START!`, 1500);
+                        setTimeout(() => prepareNextShot(1, 0), 1600);
+                    } else {
+                        // 3ラウンド終了
+                        finishMatch();
+                    }
+                } else {
+                    // 次の投球者へ交代（交互）
+                    const nextPlayer = (currentPlayer === 1) ? 2 : 1;
+                    prepareNextShot(nextPlayer, currentStoneInRound);
+                }
+            }, 1800);
+        }
+
+        function finishMatch() {
+            gameState = STATES.MATCH_RESULT;
+            const modal = document.getElementById('result-modal');
+            const winnerText = document.getElementById('winner-text');
+            const stats = document.getElementById('final-stats');
+
+            const p1Total = p1RoundScores.reduce((a, b) => a + b, 0);
+            const p2Total = p2RoundScores.reduce((a, b) => a + b, 0);
+
+            if (p1Total > p2Total) {
+                winnerText.innerText = 'PLAYER 1 WINS!';
+                winnerText.style.color = 'var(--p1-color)';
+            } else if (p2Total > p1Total) {
+                winnerText.innerText = 'PLAYER 2 WINS!';
+                winnerText.style.color = 'var(--p2-color)';
+            } else {
+                winnerText.innerText = 'DRAW MATCH!';
+                winnerText.style.color = '#ffffff';
+            }
+
+            stats.innerHTML = `P1: <b>${p1Total}</b> pts &nbsp;|&nbsp; P2: <b>${p2Total}</b> pts`;
+            modal.style.display = 'flex';
+        }
+
+        function restartMatch() {
+            document.getElementById('result-modal').style.display = 'none';
+            stonesOnIce = [];
+            startGame();
+        }
+
+        /* ==========================================================
+           メインループ
+        ========================================================== */
+        let lastZeroStatus = false;
+
+        function loop() {
+            requestAnimationFrame(loop);
+
+            // 1. 角度計算
+            displayAngle = Math.round(Math.hypot(pitch, roll));
+            document.getElementById('angle-display').innerText = `${displayAngle}°`;
+
+            // 水準器HUDバブル移動
+            const hudBubble = document.getElementById('hud-bubble');
+            const hudWrap = document.getElementById('spirit-hud');
+            const bgTint = document.getElementById('level-bg-tint');
+
+            const bX = Math.max(-42, Math.min(42, roll * 2.1));
+            const bY = Math.max(-42, Math.min(42, pitch * 2.1));
+            hudBubble.style.transform = `translate(${bX}px, ${bY}px)`;
+
+            // 0度（緑）と傾き（赤）の背景反映
+            const isZero = (displayAngle <= 2);
+            if (isZero) {
+                hudWrap.classList.add('hud-zero');
+                bgTint.style.backgroundColor = 'var(--color-zero)';
+                bgTint.style.opacity = '0.12';
+                if (!lastZeroStatus && navigator.vibrate) navigator.vibrate(15);
+            } else {
+                hudWrap.classList.remove('hud-zero');
+                // 角度が大きくなるほど赤色が強くなる
+                const tiltAlpha = Math.min(0.28, (displayAngle / 35) * 0.28);
+                bgTint.style.backgroundColor = 'var(--color-tilt)';
+                bgTint.style.opacity = tiltAlpha.toString();
+            }
+            lastZeroStatus = isZero;
+
+            // 2. パワーチャージ進行
+            if (isTouching && gameState === STATES.AIMING) {
+                chargePower += chargeSpeed;
+                if (chargePower >= 1.0 || chargePower <= 0.05) chargeSpeed = -chargeSpeed;
+                document.getElementById('charge-meter-fill').style.width = `${Math.min(1.0, Math.max(0, chargePower)) * 100}%`;
+
+                // 前傾ガイド更新
+                const pGuide = document.getElementById('tilt-pitch-guide');
+                if (pitch > 8) pGuide.innerText = `📱 前傾: BOOST +${Math.round(pitch * 2.5)}%`;
+                else if (pitch < -8) pGuide.innerText = `📱 手前傾: SLOW ${Math.round(pitch * 2.5)}%`;
+                else pGuide.innerText = `📱 ニュートラル速度`;
+            }
+
+            // 3. レア度スロット更新（30x, 50xは一瞬）
+            if (gameState === STATES.AIMING) {
+                rouletteFrameCounter++;
+                const curRarity = RARITIES[rouletteIdx];
+                if (rouletteFrameCounter >= curRarity.durationFrames) {
+                    rouletteFrameCounter = 0;
+                    rouletteIdx = (rouletteIdx + 1) % RARITIES.length;
+                    RARITIES.forEach((r, idx) => {
+                        const el = document.getElementById(`mb-${r.name}`);
+                        if (idx === rouletteIdx) el.classList.add('active');
+                        else el.classList.remove('active');
+                    });
+                }
+            }
+
+            // 4. 物理更新
+            if (gameState === STATES.SWEEPING) {
+                let allStopped = true;
+                stonesOnIce.forEach(s => {
+                    s.update();
+                    if (!s.stopped) allStopped = false;
+                });
+                handleCollisions();
+
+                if (allStopped) endTurn();
+            }
+
+            // 5. 描画
+            ctx.clearRect(0, 0, width, height);
+
+            // レーン境界
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.12)';
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.moveTo(12, 0); ctx.lineTo(12, height);
+            ctx.moveTo(width - 12, 0); ctx.lineTo(width - 12, height);
+            ctx.stroke();
+
+            // ハウス（的）
+            for (let ring of houseRings) {
+                ctx.beginPath();
+                ctx.arc(houseX, houseY, ring.r, 0, Math.PI * 2);
+                ctx.fillStyle = ring.color;
+                ctx.fill();
+                ctx.strokeStyle = ring.border;
+                ctx.lineWidth = 1.5;
+                ctx.stroke();
+            }
+
+            // Tライン & センターライン
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.2)';
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.moveTo(houseX, houseY - houseRings[0].r); ctx.lineTo(houseX, height * 0.52);
+            ctx.moveTo(houseX - houseRings[0].r, houseY); ctx.lineTo(houseX + houseRings[0].r, houseY);
+            ctx.stroke();
+
+            // 点数ガイドテキスト
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.35)';
+            ctx.font = '10px -apple-system, sans-serif';
+            ctx.textAlign = 'center';
+            ctx.fillText("10 PT", houseX, houseY + 3);
+
+            // エイミングガイドライン
+            if (gameState === STATES.AIMING) {
+                const startX = width / 2;
+                const startY = height - 90;
+                const angleRad = (-90 + (roll * 1.1)) * (Math.PI / 180);
+                const guideLen = 90 + chargePower * 140;
+
+                ctx.strokeStyle = (currentPlayer === 1) ? 'rgba(56, 189, 248, 0.75)' : 'rgba(251, 146, 60, 0.75)';
+                ctx.lineWidth = 2;
+                ctx.setLineDash([5, 5]);
+                ctx.beginPath();
+                ctx.moveTo(startX, startY);
+                ctx.lineTo(startX + Math.cos(angleRad) * guideLen, startY + Math.sin(angleRad) * guideLen);
+                ctx.stroke();
+                ctx.setLineDash([]);
+
+                // 発射サークル
+                ctx.beginPath();
+                ctx.arc(startX, startY, 25, 0, Math.PI * 2);
+                ctx.strokeStyle = 'rgba(255, 255, 255, 0.25)';
+                ctx.stroke();
+            }
+
+            // ストーン描画
+            stonesOnIce.forEach(s => s.draw(ctx));
+        }
+
+        requestAnimationFrame(loop);
+    </script>
+</body>
+</html>
