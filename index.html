@@ -30,11 +30,11 @@
             -webkit-text-size-adjust: 100%;
         }
 
-        /* 水準器の背景膜（0°＝緑、傾き＝赤） */
+        /* 傾き背景膜（傾きが大きいと赤くフェード、水平0°は落ち着いた緑） */
         #level-bg-tint {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
             pointer-events: none; opacity: 0;
-            transition: opacity 0.2s ease, background-color 0.2s ease;
+            transition: opacity 0.25s ease, background-color 0.25s ease;
             z-index: 1;
         }
 
@@ -56,57 +56,59 @@
             pointer-events: none; z-index: 150; display: none;
         }
 
-        /* スコアボード表 */
+        /* ====================
+           スコアボード表（画面最奥・スリム化配置）
+        ==================== */
         #scoreboard-container {
-            position: absolute; top: 12px; left: 50%;
+            position: absolute; top: 8px; left: 50%;
             transform: translateX(-50%);
-            width: 92%; max-width: 420px;
-            background: rgba(18, 18, 20, 0.85);
-            backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            border-radius: 14px; padding: 8px 12px;
+            width: 94%; max-width: 400px;
+            background: rgba(15, 15, 18, 0.72);
+            backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 12px; padding: 6px 12px;
             z-index: 20; pointer-events: none;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.6);
+            box-shadow: 0 4px 18px rgba(0,0,0,0.5);
         }
 
         .score-table {
-            width: 100%; border-collapse: collapse; font-size: 0.78rem; text-align: center;
+            width: 100%; border-collapse: collapse; font-size: 0.75rem; text-align: center;
         }
         .score-table th {
-            color: #94a3b8; font-weight: 500; padding: 2px 4px; border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            color: #94a3b8; font-weight: 500; padding: 1px 3px; border-bottom: 1px solid rgba(255, 255, 255, 0.08);
         }
-        .score-table td { padding: 4px; font-weight: 700; }
+        .score-table td { padding: 3px; font-weight: 700; }
         .p1-row { color: var(--p1-color); }
         .p2-row { color: var(--p2-color); }
-        .active-round-col { background: rgba(255, 255, 255, 0.12); border-radius: 4px; }
+        .active-round-col { background: rgba(255, 255, 255, 0.1); border-radius: 4px; }
 
         .stones-left-dots {
             display: inline-flex; gap: 4px; vertical-align: middle; margin-left: 4px;
         }
         .stone-dot {
-            width: 7px; height: 7px; border-radius: 50%;
+            width: 6px; height: 6px; border-radius: 50%;
             background: rgba(255,255,255,0.2); border: 1px solid currentColor;
         }
         .stone-dot.charged { background: currentColor; }
 
-        /* 水準器 HUD */
+        /* 水準器 HUD（画面下部） */
         #spirit-hud {
-            position: absolute; bottom: 20px; left: 50%;
+            position: absolute; bottom: 18px; left: 50%;
             transform: translateX(-50%);
-            width: 140px; height: 140px;
+            width: 130px; height: 130px;
             pointer-events: none; z-index: 10;
             display: flex; justify-content: center; align-items: center;
         }
 
         .hud-outer-ring {
-            position: absolute; width: 130px; height: 130px;
-            border: 1.5px solid rgba(255, 255, 255, 0.6);
+            position: absolute; width: 124px; height: 124px;
+            border: 1.5px solid rgba(255, 255, 255, 0.55);
             border-radius: 50%; transition: border-color 0.2s, box-shadow 0.2s;
         }
 
         .hud-bubble {
-            position: absolute; width: 105px; height: 105px;
-            border: 1.5px solid rgba(255, 255, 255, 0.9);
+            position: absolute; width: 100px; height: 100px;
+            border: 1.5px solid rgba(255, 255, 255, 0.85);
             border-radius: 50%; display: flex; justify-content: center; align-items: center;
             background: rgba(255, 255, 255, 0.05);
             backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px);
@@ -114,21 +116,21 @@
         }
 
         #angle-display {
-            font-size: 2rem; font-weight: 200; letter-spacing: -1px; color: #ffffff;
+            font-size: 1.9rem; font-weight: 200; letter-spacing: -1px; color: #ffffff;
         }
 
         .hud-zero .hud-outer-ring {
             border-color: #ffffff; box-shadow: 0 0 20px rgba(16, 185, 129, 0.7);
         }
         .hud-zero .hud-bubble {
-            border-color: #ffffff; background: rgba(16, 185, 129, 0.3);
+            border-color: #ffffff; background: rgba(16, 185, 129, 0.28);
         }
 
         /* ショット準備 HUD */
         #shot-guide-hud {
-            position: absolute; bottom: 180px; left: 50%;
+            position: absolute; bottom: 165px; left: 50%;
             transform: translateX(-50%);
-            display: flex; flex-direction: column; align-items: center; gap: 7px;
+            display: flex; flex-direction: column; align-items: center; gap: 6px;
             z-index: 15; pointer-events: none;
             opacity: 0; transition: opacity 0.2s;
         }
@@ -140,10 +142,10 @@
             padding: 4px 8px; border-radius: 16px;
         }
         .mult-badge {
-            font-size: 0.75rem; font-weight: 700; padding: 4px 7px; border-radius: 10px;
+            font-size: 0.72rem; font-weight: 700; padding: 3px 6px; border-radius: 10px;
             opacity: 0.25; border: 1px solid transparent; transition: transform 0.05s;
         }
-        .mult-badge.active { opacity: 1; transform: scale(1.2); }
+        .mult-badge.active { opacity: 1; transform: scale(1.18); }
         .mult-white { color: #fff; border-color: #fff; }
         .mult-black { color: #94a3b8; border-color: #64748b; }
         .mult-red { color: #ef4444; border-color: #ef4444; }
@@ -151,12 +153,12 @@
         .mult-gold { color: #facc15; border-color: #facc15; }
 
         #tilt-pitch-guide {
-            font-size: 0.82rem; font-weight: 700; letter-spacing: 0.5px;
-            background: rgba(0,0,0,0.6); padding: 4px 12px; border-radius: 12px;
+            font-size: 0.8rem; font-weight: 700; letter-spacing: 0.5px;
+            background: rgba(0,0,0,0.65); padding: 4px 12px; border-radius: 12px;
         }
 
         #tap-prompt {
-            font-size: 0.75rem; color: #38bdf8; letter-spacing: 1.5px;
+            font-size: 0.72rem; color: #38bdf8; letter-spacing: 1.5px;
             animation: pulseText 1.2s infinite ease-in-out;
         }
         @keyframes pulseText {
@@ -165,9 +167,9 @@
         }
 
         #action-msg {
-            position: absolute; top: 44%; left: 50%;
+            position: absolute; top: 46%; left: 50%;
             transform: translate(-50%, -50%);
-            font-size: 1.7rem; font-weight: 800; letter-spacing: 2px;
+            font-size: 1.6rem; font-weight: 800; letter-spacing: 2px;
             text-shadow: 0 4px 25px rgba(0,0,0,0.9);
             text-align: center; pointer-events: none; z-index: 50;
             opacity: 0; transition: opacity 0.3s, transform 0.3s;
@@ -188,8 +190,8 @@
             -webkit-background-clip: text; -webkit-text-fill-color: transparent;
         }
         .styled-btn {
-            padding: 14px 44px; background: #ffffff; color: #000000;
-            border: none; border-radius: 40px; font-size: 1.05rem; font-weight: 700;
+            padding: 13px 44px; background: #ffffff; color: #000000;
+            border: none; border-radius: 40px; font-size: 1.02rem; font-weight: 700;
             cursor: pointer; box-shadow: 0 4px 25px rgba(255,255,255,0.25);
             transition: transform 0.1s; margin-top: 10px; margin-bottom: 25px;
         }
@@ -207,7 +209,7 @@
         }
         #demo-caption {
             position: absolute; bottom: 0; left: 0; width: 100%;
-            background: rgba(0, 0, 0, 0.8); backdrop-filter: blur(6px);
+            background: rgba(0, 0, 0, 0.85); backdrop-filter: blur(6px);
             padding: 6px 10px; font-size: 0.72rem; font-weight: 600; color: #38bdf8;
             text-align: center; border-top: 1px solid rgba(255,255,255,0.1);
             line-height: 1.35;
@@ -223,7 +225,7 @@
         }
         @keyframes blinkDot { 0%, 100% { opacity: 1; } 50% { opacity: 0.2; } }
 
-        /* 詳細ルールリスト */
+        /* 詳細ルールカード */
         .rule-scroll-view {
             width: 100%; max-width: 320px; display: flex; flex-direction: column; gap: 9px; margin-bottom: 10px;
         }
@@ -254,7 +256,7 @@
     <canvas id="game-canvas"></canvas>
     <canvas id="confetti-canvas"></canvas>
 
-    <!-- カーリング スコアボード表 -->
+    <!-- カーリング スコアボード表（画面最奥） -->
     <div id="scoreboard-container">
         <table class="score-table">
             <thead>
@@ -274,7 +276,7 @@
                     <td id="p1-r1">-</td>
                     <td id="p1-r2">-</td>
                     <td id="p1-r3">-</td>
-                    <td id="p1-total" style="font-size: 0.95rem;">0</td>
+                    <td id="p1-total" style="font-size: 0.92rem;">0</td>
                 </tr>
                 <tr class="p2-row">
                     <td style="text-align: left;">
@@ -283,7 +285,7 @@
                     <td id="p2-r1">-</td>
                     <td id="p2-r2">-</td>
                     <td id="p2-r3">-</td>
-                    <td id="p2-total" style="font-size: 0.95rem;">0</td>
+                    <td id="p2-total" style="font-size: 0.92rem;">0</td>
                 </tr>
             </tbody>
         </table>
@@ -312,43 +314,42 @@
 
     <div id="action-msg"></div>
 
-    <!-- 1. 詳細ルール説明画面（丁寧な解説と動く映像付き） -->
+    <!-- 1. 詳細ルール説明画面（実写風映像付き） -->
     <div id="start-modal" class="modal-screen">
         <div class="modal-title">LEVEL ZERO</div>
         <div style="font-size: 0.75rem; letter-spacing: 4px; color: #38bdf8; font-weight: 700;">TILT CURLING</div>
 
-        <!-- プレイ中の動く説明映像スクリーン -->
         <div id="demo-video-box">
             <div class="video-rec-tag"><div class="rec-dot"></div>HOW TO PLAY</div>
             <canvas id="demo-canvas" width="320" height="155"></canvas>
-            <div id="demo-caption">1. タップで即発射！スマホ上下でスピード調整</div>
+            <div id="demo-caption">1. タップで発射！そのまま放置で自然と中心に止まります</div>
         </div>
 
         <div class="rule-scroll-view">
             <!-- カード1: 発射操作 -->
             <div class="rule-visual-card">
-                <div class="card-icon">📱</div>
+                <div class="card-icon">🎯</div>
                 <div class="card-content">
-                    <h4>【発射】タップで打ち出し & 角度調整</h4>
-                    <p>画面をタップするとストーンが打ち出されます。<br>スマホを<b>手前に起こすと速く（強打）</b>、<b>奥に倒すとゆっくり（弱打）</b>になります。標準の角度で中央付近へ届きます。</p>
+                    <h4>【発射】タップで打ち出し & 放置で中心へ</h4>
+                    <p>画面をタップすると発射します。標準のまま何もしなければ、<b>スーッと進んで得点の高い中心円（10点エリア）付近で自然に止まります</b>。</p>
                 </div>
             </div>
 
-            <!-- カード2: スイープと急ブレーキ -->
+            <!-- カード2: スイープとスピード持続 -->
             <div class="rule-visual-card">
-                <div class="card-icon">🟢</div>
+                <div class="card-icon">📱</div>
                 <div class="card-content">
-                    <h4>【滑走】1秒後に傾けてぬめぬめ誘導 & 0°停止</h4>
-                    <p>発射後1秒間はまっすぐ的へ滑ります。その後、スマホを<b>傾けるとぬめぬめと曲がり</b>、狙いたい位置で<b>「0°完全水平」にするとピタッと急ブレーキ</b>がかかります。</p>
+                    <h4>【滑走】スマホを傾けるとスピードが持続！</h4>
+                    <p><b>角度が大きいと減速が緩やかになり、スピードが長く持続</b>して遠くまで伸びます。水平（0°付近）に戻すと自然な摩擦で緩やかに止まります。</p>
                 </div>
             </div>
 
             <!-- カード3: スコア構造 & 高得点石 -->
             <div class="rule-visual-card">
-                <div class="card-icon">🎯</div>
+                <div class="card-icon">⚡</div>
                 <div class="card-content">
-                    <h4>【得点】ハウスの得点 × 目押しの倍率石</h4>
-                    <p>円の中心に近いほど高得点（10・5・3・1点）。発射時に高速回転するスロットで<b>緑(30x)</b>や<b>金(50x)</b>を引き当てると一気に大量得点できます！</p>
+                    <h4>【得点】中心に近いほど高得点 × レア倍率</h4>
+                    <p>ハウスの得点（10・5・3・1点）に発射時の倍率が掛かります。高速スロットで<b>緑(30x)</b>や<b>金(50x)</b>を止めれば一撃大逆転！</p>
                 </div>
             </div>
         </div>
@@ -397,8 +398,8 @@
             { name: 'white', mult: 5,  color: '#ffffff', stroke: '#ffffff', label: '5x',  durationFrames: 24 },
             { name: 'black', mult: 10, color: '#1e293b', stroke: '#94a3b8', label: '10x', durationFrames: 20 },
             { name: 'red',   mult: 15, color: '#ef4444', stroke: '#ffffff', label: '15x', durationFrames: 15 },
-            { name: 'green', mult: 30, color: '#10b981', stroke: '#ffffff', label: '30x', durationFrames: 4  }, // 激レア
-            { name: 'gold',  mult: 50, color: '#eab308', stroke: '#fef08a', label: '50x', durationFrames: 2  }  // 超激レア
+            { name: 'green', mult: 30, color: '#10b981', stroke: '#ffffff', label: '30x', durationFrames: 4  },
+            { name: 'gold',  mult: 50, color: '#eab308', stroke: '#fef08a', label: '50x', durationFrames: 2  }
         ];
         let rouletteIdx = 0;
         let rouletteFrameCounter = 0;
@@ -418,7 +419,7 @@
 
         /* ==========================================================
            ストーン クラス
-           （発射後1秒は前進保証＆その後ぬめぬめ傾き＋0°停止）
+           （放置で中心へ自然停止 ＆ 傾きでスピード持続）
         ========================================================== */
         class Stone {
             constructor(x, y, player, rarity) {
@@ -426,58 +427,48 @@
                 this.y = y;
                 this.vx = 0;
                 this.vy = 0;
-                this.radius = 23;
+                this.radius = 22;
                 this.mass = 2.4;
                 this.player = player;
                 this.rarity = rarity;
                 this.stopped = false;
                 this.trail = [];
-                this.lifeTime = 0; // 生存フレーム数
+                this.lifeTime = 0;
             }
 
             update() {
                 if (this.stopped) return;
 
                 this.lifeTime++;
-
                 this.trail.push({ x: this.x, y: this.y });
                 if (this.trail.length > 8) this.trail.shift();
 
                 const currentSpeed = Math.hypot(this.vx, this.vy);
 
                 /*
-                   改善された物理挙動：
-                   1. 発射後約1秒間（60フレーム）は「前進グライド保証期間」。
-                      0度水平であっても急ブレーキをかけず、スーッと的へ向かって滑走する。
-                   2. 1秒経過後から「水準器スイープフェーズ」が解禁：
-                      - 傾けると摩擦が抜けて「ぬめぬめ」滑り・旋回
-                      - 0°水平に保つと急ブレーキがかかり狙った位置に停止
-                   3. 低速になったらしっかり停止（再滑走を防止）
+                   改善された自然物理モデル：
+                   1. 基本摩擦（frictionBase = 0.978）
+                      時間が経つにつれて徐々に減速し、「スーッと緩やかに止まる」。
+                   2. 傾きによるスピード持続（スイープ挙動）
+                      角度（displayAngle）が大きいほど摩擦が低減（最大 0.994 まで）し、
+                      速度の減少が緩やかになってスピードが長く持続する！
+                   3. 角度が小さい（水平に近い）ときは、自然摩擦で緩やかに減速して止まる。
                 */
-                const isInitialGlide = (this.lifeTime < 58);
-                let friction = 0.978;
+                const frictionBase = 0.978;
+                
+                // 角度に応じたスピード持続ボーナス（傾けるほど減速が緩やかになる）
+                const tiltGlideBonus = Math.min(0.016, (displayAngle / 30) * 0.016);
+                let friction = frictionBase + tiltGlideBonus;
 
-                if (isInitialGlide) {
-                    // 発射直後は滑らかに前進（0度急ブレーキを無効化）
-                    friction = 0.984;
-                    // 初期の微小な方向ブレを防ぎ直進性を確保
-                    this.vx += roll * 0.0015;
-                } else {
-                    // 1秒経過後：水準器コントロールフェーズ
-                    if (displayAngle <= 2) {
-                        // 0°完全水平で狙い澄ました急ブレーキ！
-                        friction = 0.880;
-                    } else if (currentSpeed > 0.6) {
-                        // 傾けると「ぬめぬめ滑る」：摩擦が減少し、傾き方向へ滑らかに加速
-                        const tiltGlideBonus = Math.min(0.012, (displayAngle / 30) * 0.012);
-                        friction = 0.974 + tiltGlideBonus;
+                // 傾きによる微小なカーブ旋回・推進
+                if (currentSpeed > 0.5) {
+                    this.vx += roll * 0.0035;
+                    this.vy += pitch * 0.0035; // 上下方向の微調整
+                }
 
-                        this.vx += roll * 0.0045;
-                        this.vy += pitch * 0.005; // スマホ上下の逆転操作に対応
-                    } else {
-                        // 速度が落ちてきたら静止摩擦でピタッとロック
-                        friction = 0.82;
-                    }
+                // 速度が極小になったら自然にピタッと完全静止
+                if (currentSpeed < 0.12) {
+                    friction = 0.8;
                 }
 
                 this.vx *= friction;
@@ -487,11 +478,11 @@
                 this.y += this.vy;
 
                 // 壁バウンド
-                if (this.x - this.radius < 14) {
-                    this.x = 14 + this.radius;
+                if (this.x - this.radius < 12) {
+                    this.x = 12 + this.radius;
                     this.vx *= -0.35;
-                } else if (this.x + this.radius > width - 14) {
-                    this.x = width - 14 - this.radius;
+                } else if (this.x + this.radius > width - 12) {
+                    this.x = width - 12 - this.radius;
                     this.vx *= -0.35;
                 }
 
@@ -500,8 +491,8 @@
                     this.vy *= -0.35;
                 }
 
-                // 完全静止判定（1秒経過後のみ静止判定）
-                if (!isInitialGlide && currentSpeed < 0.16) {
+                // 停止判定
+                if (currentSpeed < 0.08) {
                     this.vx = 0;
                     this.vy = 0;
                     this.stopped = true;
@@ -513,7 +504,7 @@
                     const p = this.trail[i];
                     ctx.beginPath();
                     ctx.arc(p.x, p.y, this.radius * (i / this.trail.length), 0, Math.PI * 2);
-                    ctx.fillStyle = (displayAngle <= 2 && this.lifeTime >= 58) 
+                    ctx.fillStyle = (displayAngle <= 2) 
                         ? `rgba(16, 185, 129, ${i / 22})`
                         : `rgba(255, 255, 255, ${i / 30})`;
                     ctx.fill();
@@ -574,19 +565,22 @@
         }
 
         /* ==========================================================
-           リサイズ & レーン設定
+           リサイズ & レーン設定（スコア表を奥にして円全体を完全に可視化）
         ========================================================== */
         function resize() {
             width = canvas.width = window.innerWidth;
             height = canvas.height = window.innerHeight;
             houseX = width / 2;
-            houseY = height * 0.28;
+            
+            // スコアボード直下に十分な余白を取り、円全体が画面上部に美しく収まる位置に調整
+            houseY = height * 0.29;
 
+            // ハウス（的）同心円：全体がクッキリ見通せるサイズ
             houseRings = [
-                { r: width * 0.36, pts: 1,  color: 'rgba(59, 130, 246, 0.16)', border: 'rgba(59, 130, 246, 0.45)' },
-                { r: width * 0.24, pts: 3,  color: 'rgba(255, 255, 255, 0.08)', border: 'rgba(255, 255, 255, 0.3)' },
-                { r: width * 0.13, pts: 5,  color: 'rgba(239, 68, 68, 0.22)',   border: 'rgba(239, 68, 68, 0.55)' },
-                { r: width * 0.04, pts: 10, color: 'rgba(255, 255, 255, 0.45)', border: '#ffffff' }
+                { r: width * 0.35, pts: 1,  color: 'rgba(59, 130, 246, 0.16)', border: 'rgba(59, 130, 246, 0.45)' },
+                { r: width * 0.23, pts: 3,  color: 'rgba(255, 255, 255, 0.08)', border: 'rgba(255, 255, 255, 0.3)' },
+                { r: width * 0.12, pts: 5,  color: 'rgba(239, 68, 68, 0.22)',   border: 'rgba(239, 68, 68, 0.55)' },
+                { r: width * 0.038, pts: 10, color: 'rgba(255, 255, 255, 0.45)', border: '#ffffff' }
             ];
 
             confettiCanvas.width = width;
@@ -668,7 +662,7 @@
         }
 
         /* ==========================================================
-           ワンタップ高速発射（初速調整版）
+           ワンタップ発射（放置で中心に届く初速調整）
         ========================================================== */
         window.addEventListener('pointerdown', (e) => {
             if (gameState !== STATES.AIMING) return;
@@ -686,28 +680,33 @@
 
             const angleRad = (-90 + (roll * 0.9)) * (Math.PI / 180);
 
-            // 手前に起こすと速く(BOOST)、奥に倒すとゆっくり(SLOW)
-            const pitchSpeedMod = 1.0 - (pitch * 0.007);
-            const clampedMod = Math.max(0.85, Math.min(1.15, pitchSpeedMod));
+            // 手前に起こすと少し速く(BOOST)、奥に倒すと少しゆっくり(SLOW)
+            const pitchSpeedMod = 1.0 - (pitch * 0.006);
+            const clampedMod = Math.max(0.88, Math.min(1.12, pitchSpeedMod));
 
-            // 標準初速（発射後1秒のスライドで自然にハウス前〜中心へ到達する設計）
-            const baseSpeed = Math.sqrt((startY - houseY) * 0.42);
-            const finalSpeed = baseSpeed * clampedMod;
+            /*
+               基礎初速の精密計算：
+               自然放置（摩擦 0.978）で、startYからhouseY（中心）までの距離Dを
+               ちょうど進んで自然停止する初速: V0 = D * (1 - 0.978) = D * 0.022
+            */
+            const distanceToHouse = startY - houseY;
+            const perfectBaseSpeed = distanceToHouse * 0.0222;
+            const finalSpeed = perfectBaseSpeed * clampedMod;
 
             stone.vx = Math.cos(angleRad) * finalSpeed;
-            stone.vy = Math.sin(angleRad) * finalSpeed;
+            stone.vy = -finalSpeed; // 的の方向(-Y)へ打ち出し
 
             stonesOnIce.push(stone);
             activeStone = stone;
 
             gameState = STATES.SWEEPING;
 
-            if (clampedMod > 1.04) showActionMsg("BOOST SHOT!", 800);
-            else if (clampedMod < 0.96) showActionMsg("SLOW SHOT", 800);
-            else showActionMsg("SPEED SHOT!", 800);
+            if (clampedMod > 1.03) showActionMsg("BOOST SHOT", 700);
+            else if (clampedMod < 0.97) showActionMsg("SLOW SHOT", 700);
+            else showActionMsg("PERFECT SHOT", 700);
         }
 
-        function showActionMsg(text, duration = 1400) {
+        function showActionMsg(text, duration = 1300) {
             const el = document.getElementById('action-msg');
             el.innerText = text;
             el.style.opacity = '1';
@@ -929,7 +928,7 @@
         }
 
         /* ==========================================================
-           1ページ目：説明映像シミュレーター（自動ループアニメ）
+           1ページ目：説明映像シミュレーター（更新版）
         ========================================================== */
         const demoCanvas = document.getElementById('demo-canvas');
         const dCtx = demoCanvas.getContext('2d');
@@ -944,10 +943,10 @@
             dCtx.strokeStyle = 'rgba(255,255,255,0.1)';
             dCtx.strokeRect(10, 0, 300, 155);
 
-            const hX = 160, hY = 40;
+            const hX = 160, hY = 38;
             const rings = [
-                { r: 35, col: 'rgba(59, 130, 246, 0.25)', border: 'rgba(59, 130, 246, 0.5)' },
-                { r: 23, col: 'rgba(255, 255, 255, 0.1)', border: 'rgba(255, 255, 255, 0.4)' },
+                { r: 34, col: 'rgba(59, 130, 246, 0.25)', border: 'rgba(59, 130, 246, 0.5)' },
+                { r: 22, col: 'rgba(255, 255, 255, 0.1)', border: 'rgba(255, 255, 255, 0.4)' },
                 { r: 12, col: 'rgba(239, 68, 68, 0.3)', border: 'rgba(239, 68, 68, 0.7)' },
                 { r: 4,  col: '#ffffff', border: '#fff' }
             ];
@@ -959,10 +958,11 @@
             });
 
             if (t < 120) {
-                // シーン1: 発射（LAUNCH）
-                demoCaption.innerText = "【発射】画面をタップして打ち出し！スマホの角度で強弱調整";
+                // シーン1: 発射（自然に中心へ）
+                demoCaption.innerText = "【発射】タップで打ち出し！そのまま放置で自然と中心に届きます";
                 const p = t / 120;
-                const stoneY = 135 - p * 75;
+                // 自然にスーッと減速して中心(38)で止まるイージング
+                const stoneY = 135 - (1 - Math.pow(1 - p, 2)) * 97;
                 drawDemoStone(160, stoneY, '#38bdf8', '5x', '#ffffff');
 
                 if (t < 25) {
@@ -972,23 +972,23 @@
                     dCtx.stroke();
                 }
             } else if (t < 240) {
-                // シーン2: 水平0°急停止（0° BRAKE）
-                demoCaption.innerText = "【滑走】1秒後から傾きに反応！傾けてぬめぬめ曲げ、0°で急停止";
+                // シーン2: 傾きでスピード持続（ロンググライド）
+                demoCaption.innerText = "【滑走】スマホを傾けるとスピード持続！遠くまで伸びます";
                 const p = (t - 120) / 120;
-                const stoneY = 60 - Math.sin(p * Math.PI / 2) * 20;
+                const stoneY = 135 - p * 110; // 減速せずスーッと奥まで伸びる
 
-                dCtx.fillStyle = 'rgba(16, 185, 129, 0.15)';
+                // 傾き赤色演出
+                dCtx.fillStyle = 'rgba(239, 68, 68, 0.12)';
                 dCtx.fillRect(0, 0, 320, 155);
 
-                drawDemoStone(160, stoneY, '#38bdf8', '10x', '#ffffff');
+                drawDemoStone(160 + Math.sin(p * Math.PI) * 20, stoneY, '#38bdf8', '10x', '#ffffff');
 
-                dCtx.beginPath();
-                dCtx.arc(160, stoneY, 20 + Math.sin(t*0.2)*2, 0, Math.PI * 2);
-                dCtx.strokeStyle = '#10b981';
-                dCtx.lineWidth = 2;
-                dCtx.stroke();
+                // 傾きエフェクト矢印
+                dCtx.fillStyle = 'rgba(255, 255, 255, 0.5)';
+                dCtx.font = '10px sans-serif';
+                dCtx.fillText("SPEED BOOST ⏩", 195, stoneY + 4);
             } else {
-                // シーン3: 高得点ストーン（GOLD & GREEN RARE）
+                // シーン3: 高得点ストーン
                 demoCaption.innerText = "【得点】中心に近いほど高得点！金(50x)や緑(30x)の激レア石で大逆転";
                 
                 drawDemoStone(120, 70, '#fb923c', '50x', '#facc15', true);
@@ -1057,19 +1057,19 @@
             const hudWrap = document.getElementById('spirit-hud');
             const bgTint = document.getElementById('level-bg-tint');
 
-            const bX = Math.max(-38, Math.min(38, roll * 1.8));
-            const bY = Math.max(-38, Math.min(38, pitch * 1.8));
+            const bX = Math.max(-36, Math.min(36, roll * 1.7));
+            const bY = Math.max(-36, Math.min(36, pitch * 1.7));
             hudBubble.style.transform = `translate(${bX}px, ${bY}px)`;
 
             const isZero = (displayAngle <= 2);
             if (isZero) {
                 hudWrap.classList.add('hud-zero');
                 bgTint.style.backgroundColor = 'var(--color-zero)';
-                bgTint.style.opacity = '0.12';
+                bgTint.style.opacity = '0.08';
                 if (!lastZeroStatus && navigator.vibrate) navigator.vibrate(15);
             } else {
                 hudWrap.classList.remove('hud-zero');
-                const tiltAlpha = Math.min(0.25, (displayAngle / 35) * 0.25);
+                const tiltAlpha = Math.min(0.22, (displayAngle / 35) * 0.22);
                 bgTint.style.backgroundColor = 'var(--color-tilt)';
                 bgTint.style.opacity = tiltAlpha.toString();
             }
@@ -1079,13 +1079,13 @@
             if (gameState === STATES.AIMING) {
                 const pGuide = document.getElementById('tilt-pitch-guide');
                 if (pitch < -8) {
-                    pGuide.innerText = `📱 手前傾: BOOST (速い)`;
+                    pGuide.innerText = `📱 手前傾: BOOST (強め)`;
                     pGuide.style.color = '#38bdf8';
                 } else if (pitch > 8) {
-                    pGuide.innerText = `📱 奥傾: SLOW (遅い)`;
+                    pGuide.innerText = `📱 奥傾: SLOW (弱め)`;
                     pGuide.style.color = '#94a3b8';
                 } else {
-                    pGuide.innerText = `📱 ニュートラル (標準速度)`;
+                    pGuide.innerText = `📱 ニュートラル (中心に届く標準速度)`;
                     pGuide.style.color = '#10b981';
                 }
 
@@ -1116,6 +1116,7 @@
 
             ctx.clearRect(0, 0, width, height);
 
+            // レーン境界線
             ctx.strokeStyle = 'rgba(255, 255, 255, 0.12)';
             ctx.lineWidth = 1;
             ctx.beginPath();
@@ -1123,6 +1124,7 @@
             ctx.moveTo(width - 14, 0); ctx.lineTo(width - 14, height);
             ctx.stroke();
 
+            // ハウス（的）同心円描画（全体が遮られず見渡せる）
             for (let ring of houseRings) {
                 ctx.beginPath();
                 ctx.arc(houseX, houseY, ring.r, 0, Math.PI * 2);
@@ -1133,6 +1135,7 @@
                 ctx.stroke();
             }
 
+            // 十字ライン
             ctx.strokeStyle = 'rgba(255, 255, 255, 0.2)';
             ctx.lineWidth = 1;
             ctx.beginPath();
@@ -1140,7 +1143,7 @@
             ctx.moveTo(houseX - houseRings[0].r, houseY); ctx.lineTo(houseX + houseRings[0].r, houseY);
             ctx.stroke();
 
-            ctx.fillStyle = 'rgba(255, 255, 255, 0.4)';
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.45)';
             ctx.font = '10px -apple-system, sans-serif';
             ctx.textAlign = 'center';
             ctx.fillText("10 PT", houseX, houseY + 3);
