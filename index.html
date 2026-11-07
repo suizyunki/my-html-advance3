@@ -176,10 +176,10 @@
         /* モーダル */
         .modal-screen {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.92);
+            background: rgba(0, 0, 0, 0.93);
             backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
             display: flex; flex-direction: column; justify-content: flex-start; align-items: center;
-            z-index: 100; padding: 20px 16px; text-align: center;
+            z-index: 100; padding: 18px 16px; text-align: center;
             overflow-y: auto; -webkit-overflow-scrolling: touch;
         }
         .modal-title {
@@ -191,13 +191,11 @@
             padding: 14px 44px; background: #ffffff; color: #000000;
             border: none; border-radius: 40px; font-size: 1.05rem; font-weight: 700;
             cursor: pointer; box-shadow: 0 4px 25px rgba(255,255,255,0.25);
-            transition: transform 0.1s; margin-top: 10px; margin-bottom: 20px;
+            transition: transform 0.1s; margin-top: 10px; margin-bottom: 25px;
         }
         .styled-btn:active { transform: scale(0.95); }
 
-        /* ====================
-           1ページ目：説明映像スクリーン
-        ==================== */
+        /* 1ページ目：説明映像スクリーン */
         #demo-video-box {
             width: 100%; max-width: 320px; height: 155px;
             background: #080808; border: 1.5px solid rgba(255, 255, 255, 0.2);
@@ -209,9 +207,10 @@
         }
         #demo-caption {
             position: absolute; bottom: 0; left: 0; width: 100%;
-            background: rgba(0, 0, 0, 0.75); backdrop-filter: blur(6px);
-            padding: 5px 8px; font-size: 0.72rem; font-weight: 600; color: #38bdf8;
+            background: rgba(0, 0, 0, 0.8); backdrop-filter: blur(6px);
+            padding: 6px 10px; font-size: 0.72rem; font-weight: 600; color: #38bdf8;
             text-align: center; border-top: 1px solid rgba(255,255,255,0.1);
+            line-height: 1.35;
         }
         .video-rec-tag {
             position: absolute; top: 8px; left: 10px;
@@ -226,20 +225,19 @@
 
         /* 詳細ルールリスト */
         .rule-scroll-view {
-            width: 100%; max-width: 320px; display: flex; flex-direction: column; gap: 8px; margin-bottom: 10px;
+            width: 100%; max-width: 320px; display: flex; flex-direction: column; gap: 9px; margin-bottom: 10px;
         }
         .rule-visual-card {
             background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12);
-            border-radius: 12px; padding: 10px 12px; text-align: left;
-            display: flex; gap: 10px; align-items: center;
+            border-radius: 12px; padding: 10px 14px; text-align: left;
+            display: flex; gap: 12px; align-items: flex-start;
         }
         .card-icon {
-            font-size: 1.5rem; flex-shrink: 0; width: 34px; text-align: center;
+            font-size: 1.4rem; flex-shrink: 0; width: 30px; text-align: center; margin-top: 2px;
         }
-        .card-content h4 { font-size: 0.82rem; color: #ffffff; margin-bottom: 2px; }
-        .card-content p { font-size: 0.7rem; color: #94a3b8; line-height: 1.35; }
+        .card-content h4 { font-size: 0.83rem; color: #ffffff; margin-bottom: 3px; font-weight: 700; }
+        .card-content p { font-size: 0.72rem; color: #cbd5e1; line-height: 1.45; }
 
-        /* 祝福演出バッジ */
         #celebration-badge {
             font-size: 3.5rem; margin-top: 40px; margin-bottom: 8px;
             animation: bounceTrophy 1s infinite alternate cubic-bezier(0.175, 0.885, 0.32, 1.275);
@@ -314,7 +312,7 @@
 
     <div id="action-msg"></div>
 
-    <!-- 1. 詳細ルール説明画面（実写風プレイ映像シミュレーター付き） -->
+    <!-- 1. 詳細ルール説明画面（丁寧な解説と動く映像付き） -->
     <div id="start-modal" class="modal-screen">
         <div class="modal-title">LEVEL ZERO</div>
         <div style="font-size: 0.75rem; letter-spacing: 4px; color: #38bdf8; font-weight: 700;">TILT CURLING</div>
@@ -331,26 +329,26 @@
             <div class="rule-visual-card">
                 <div class="card-icon">📱</div>
                 <div class="card-content">
-                    <h4>タップ発射 & 上下で初速調整</h4>
-                    <p><b>タップで即座に打ち出します。</b><br>スマホを手前に起こすと<b>BOOST（速い）</b>、奥に倒すと<b>SLOW（遅い）</b>。標準角度でちょうど中央に届きます。</p>
+                    <h4>【発射】タップで打ち出し & 角度調整</h4>
+                    <p>画面をタップするとストーンが打ち出されます。<br>スマホを<b>手前に起こすと速く（強打）</b>、<b>奥に倒すとゆっくり（弱打）</b>になります。標準の角度で中央付近へ届きます。</p>
                 </div>
             </div>
 
-            <!-- カード2: スコア構造 & 高得点石 -->
-            <div class="rule-visual-card">
-                <div class="card-icon">🎯</div>
-                <div class="card-content">
-                    <h4>ハウス得点 × 激レア高得点石</h4>
-                    <p>中心に近いほど高得点（10・5・3・1点）。高速スロットで止めた<b>緑(30x)</b>や<b>金(50x)</b>の石で打てば一撃大逆転！</p>
-                </div>
-            </div>
-
-            <!-- カード3: 水準器ブレーキ -->
+            <!-- カード2: スイープと急ブレーキ -->
             <div class="rule-visual-card">
                 <div class="card-icon">🟢</div>
                 <div class="card-content">
-                    <h4>0°水平で急ブレーキ停止</h4>
-                    <p>滑走中にスマホを完全水平に保つと急減速してピタッと停止！傾けると左右微カーブします（停止後の再滑走は防止済）。</p>
+                    <h4>【滑走】1秒後に傾けてぬめぬめ誘導 & 0°停止</h4>
+                    <p>発射後1秒間はまっすぐ的へ滑ります。その後、スマホを<b>傾けるとぬめぬめと曲がり</b>、狙いたい位置で<b>「0°完全水平」にするとピタッと急ブレーキ</b>がかかります。</p>
+                </div>
+            </div>
+
+            <!-- カード3: スコア構造 & 高得点石 -->
+            <div class="rule-visual-card">
+                <div class="card-icon">🎯</div>
+                <div class="card-content">
+                    <h4>【得点】ハウスの得点 × 目押しの倍率石</h4>
+                    <p>円の中心に近いほど高得点（10・5・3・1点）。発射時に高速回転するスロットで<b>緑(30x)</b>や<b>金(50x)</b>を引き当てると一気に大量得点できます！</p>
                 </div>
             </div>
         </div>
@@ -419,7 +417,8 @@
         let activeStone = null;
 
         /* ==========================================================
-           ストーン クラス（高速打ち出し & 静止後の滑り防止）
+           ストーン クラス
+           （発射後1秒は前進保証＆その後ぬめぬめ傾き＋0°停止）
         ========================================================== */
         class Stone {
             constructor(x, y, player, rarity) {
@@ -433,10 +432,13 @@
                 this.rarity = rarity;
                 this.stopped = false;
                 this.trail = [];
+                this.lifeTime = 0; // 生存フレーム数
             }
 
             update() {
                 if (this.stopped) return;
+
+                this.lifeTime++;
 
                 this.trail.push({ x: this.x, y: this.y });
                 if (this.trail.length > 8) this.trail.shift();
@@ -444,24 +446,38 @@
                 const currentSpeed = Math.hypot(this.vx, this.vy);
 
                 /*
-                   改善された物理摩擦：
-                   1. 速度がある時は滑らかに減速
-                   2. スピードが落ちてきたら（低速域）急激に減速してピタッと止まる
-                   3. 一度止まりかけたら傾きによる外力を無視（再滑走・ズルズル滑りを防止）
-                   4. スマホの上下の向きと石の進み方を逆転（pitch正で前進微アシスト）
+                   改善された物理挙動：
+                   1. 発射後約1秒間（60フレーム）は「前進グライド保証期間」。
+                      0度水平であっても急ブレーキをかけず、スーッと的へ向かって滑走する。
+                   2. 1秒経過後から「水準器スイープフェーズ」が解禁：
+                      - 傾けると摩擦が抜けて「ぬめぬめ」滑り・旋回
+                      - 0°水平に保つと急ブレーキがかかり狙った位置に停止
+                   3. 低速になったらしっかり停止（再滑走を防止）
                 */
-                let friction = 0.962;
+                const isInitialGlide = (this.lifeTime < 58);
+                let friction = 0.978;
 
-                if (displayAngle <= 2) {
-                    friction = 0.885; // 0°完全水平で急ブレーキ
-                } else if (currentSpeed > 0.8) {
-                    // 通常滑走中のみ傾き介入が効く（微カーブ）
-                    this.vx += roll * 0.0035;
-                    // 上下の向きを逆転：スマホを奥に倒す(pitch>0)で手前(+Y)、手前に起こす(pitch<0)で奥(-Y)
-                    this.vy += pitch * 0.004; 
+                if (isInitialGlide) {
+                    // 発射直後は滑らかに前進（0度急ブレーキを無効化）
+                    friction = 0.984;
+                    // 初期の微小な方向ブレを防ぎ直進性を確保
+                    this.vx += roll * 0.0015;
                 } else {
-                    // スピードが落ちてきたら一気に強いブレーキ（静止摩擦）
-                    friction = 0.82;
+                    // 1秒経過後：水準器コントロールフェーズ
+                    if (displayAngle <= 2) {
+                        // 0°完全水平で狙い澄ました急ブレーキ！
+                        friction = 0.880;
+                    } else if (currentSpeed > 0.6) {
+                        // 傾けると「ぬめぬめ滑る」：摩擦が減少し、傾き方向へ滑らかに加速
+                        const tiltGlideBonus = Math.min(0.012, (displayAngle / 30) * 0.012);
+                        friction = 0.974 + tiltGlideBonus;
+
+                        this.vx += roll * 0.0045;
+                        this.vy += pitch * 0.005; // スマホ上下の逆転操作に対応
+                    } else {
+                        // 速度が落ちてきたら静止摩擦でピタッとロック
+                        friction = 0.82;
+                    }
                 }
 
                 this.vx *= friction;
@@ -484,8 +500,8 @@
                     this.vy *= -0.35;
                 }
 
-                // 完全静止判定（閾値を引き上げて早めにロック）
-                if (currentSpeed < 0.16) {
+                // 完全静止判定（1秒経過後のみ静止判定）
+                if (!isInitialGlide && currentSpeed < 0.16) {
                     this.vx = 0;
                     this.vy = 0;
                     this.stopped = true;
@@ -497,7 +513,7 @@
                     const p = this.trail[i];
                     ctx.beginPath();
                     ctx.arc(p.x, p.y, this.radius * (i / this.trail.length), 0, Math.PI * 2);
-                    ctx.fillStyle = (displayAngle <= 2) 
+                    ctx.fillStyle = (displayAngle <= 2 && this.lifeTime >= 58) 
                         ? `rgba(16, 185, 129, ${i / 22})`
                         : `rgba(255, 255, 255, ${i / 30})`;
                     ctx.fill();
@@ -539,14 +555,14 @@
                 ctx.lineWidth = 3.5;
                 ctx.stroke();
 
-                // iOS水準器の外周白リング
+                // 外周白リング
                 ctx.beginPath();
                 ctx.arc(0, 0, this.radius - 1, 0, Math.PI * 2);
                 ctx.strokeStyle = this.rarity.stroke;
                 ctx.lineWidth = 1.6;
                 ctx.stroke();
 
-                // 中央の数字（0°フォント風）
+                // 中央数字
                 ctx.fillStyle = (this.rarity.name === 'white') ? '#000000' : '#ffffff';
                 ctx.font = '300 13px -apple-system, BlinkMacSystemFont, sans-serif';
                 ctx.textAlign = 'center';
@@ -652,7 +668,7 @@
         }
 
         /* ==========================================================
-           ワンタップ高速発射（速度アップ版）
+           ワンタップ高速発射（初速調整版）
         ========================================================== */
         window.addEventListener('pointerdown', (e) => {
             if (gameState !== STATES.AIMING) return;
@@ -670,11 +686,12 @@
 
             const angleRad = (-90 + (roll * 0.9)) * (Math.PI / 180);
 
-            // 速度アップ調整：打ち出しを速く（係数を0.32から0.46へ増強）
+            // 手前に起こすと速く(BOOST)、奥に倒すとゆっくり(SLOW)
             const pitchSpeedMod = 1.0 - (pitch * 0.007);
             const clampedMod = Math.max(0.85, Math.min(1.15, pitchSpeedMod));
 
-            const baseSpeed = Math.sqrt((startY - houseY) * 0.46);
+            // 標準初速（発射後1秒のスライドで自然にハウス前〜中心へ到達する設計）
+            const baseSpeed = Math.sqrt((startY - houseY) * 0.42);
             const finalSpeed = baseSpeed * clampedMod;
 
             stone.vx = Math.cos(angleRad) * finalSpeed;
@@ -921,10 +938,9 @@
 
         function updateDemoVideo() {
             demoFrame++;
-            const t = (demoFrame % 360); // 6秒周期 (60fps想定)
+            const t = (demoFrame % 360);
             dCtx.clearRect(0, 0, 320, 155);
 
-            // 背景とハウス
             dCtx.strokeStyle = 'rgba(255,255,255,0.1)';
             dCtx.strokeRect(10, 0, 300, 155);
 
@@ -944,12 +960,11 @@
 
             if (t < 120) {
                 // シーン1: 発射（LAUNCH）
-                demoCaption.innerText = "1. タップで即発射！スマホ手前起こしで高速ショット";
+                demoCaption.innerText = "【発射】画面をタップして打ち出し！スマホの角度で強弱調整";
                 const p = t / 120;
                 const stoneY = 135 - p * 75;
                 drawDemoStone(160, stoneY, '#38bdf8', '5x', '#ffffff');
 
-                // タップ波紋
                 if (t < 25) {
                     dCtx.beginPath();
                     dCtx.arc(160, 135, t * 1.5, 0, Math.PI * 2);
@@ -958,17 +973,15 @@
                 }
             } else if (t < 240) {
                 // シーン2: 水平0°急停止（0° BRAKE）
-                demoCaption.innerText = "2. 0°完全水平で緑に光り、ピタッと急ブレーキ！";
+                demoCaption.innerText = "【滑走】1秒後から傾きに反応！傾けてぬめぬめ曲げ、0°で急停止";
                 const p = (t - 120) / 120;
                 const stoneY = 60 - Math.sin(p * Math.PI / 2) * 20;
 
-                // 0度緑色発光エフェクト
                 dCtx.fillStyle = 'rgba(16, 185, 129, 0.15)';
                 dCtx.fillRect(0, 0, 320, 155);
 
                 drawDemoStone(160, stoneY, '#38bdf8', '10x', '#ffffff');
 
-                // 0°インジケータ
                 dCtx.beginPath();
                 dCtx.arc(160, stoneY, 20 + Math.sin(t*0.2)*2, 0, Math.PI * 2);
                 dCtx.strokeStyle = '#10b981';
@@ -976,10 +989,8 @@
                 dCtx.stroke();
             } else {
                 // シーン3: 高得点ストーン（GOLD & GREEN RARE）
-                demoCaption.innerText = "3. 高速目押しで金色(50x)や緑色(30x)の激レア石を狙え！";
-                const p = (t - 240) / 120;
+                demoCaption.innerText = "【得点】中心に近いほど高得点！金(50x)や緑(30x)の激レア石で大逆転";
                 
-                // 金色オーラストーン
                 drawDemoStone(120, 70, '#fb923c', '50x', '#facc15', true);
                 drawDemoStone(200, 70, '#38bdf8', '30x', '#10b981');
 
@@ -1035,7 +1046,6 @@
         function loop() {
             requestAnimationFrame(loop);
 
-            // ルール画面が開いているときは説明映像シミュレーターを動かす
             if (document.getElementById('start-modal').style.display !== 'none') {
                 updateDemoVideo();
             }
